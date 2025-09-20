@@ -175,8 +175,8 @@ tail -f /var/adallom/syslog/514/messages
 
 4. Check **Last data received** timestamp
 5. Monitor **Uploaded logs** count
-   <img width="1104" height="456" alt="image (1)" src="https://github.com/user-attachments/assets/bf95feb9-6e7e-439b-823b-c680d1db1c61" />
-   
+   <img width="1140" height="431" alt="image" src="https://github.com/user-attachments/assets/cf7898f8-205d-4749-94b6-534bb29a941b" />
+
 
 ## Troubleshooting
 
