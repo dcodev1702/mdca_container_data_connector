@@ -22,11 +22,13 @@ The solution consists of:
 
 ### 1. Azure VM Setup
 
-Deploy an Ubuntu 20.04+ VM in Azure with the following specifications:
-- **Size**: Standard_B2s (minimum)
-- **Storage**: 30GB Premium SSD
+Deploy an Ubuntu 24.04+ VM in Azure with the following specifications:
+- **Size**: Standard_D2s (minimum)
+- **Storage**: 128GB Premium SSD
 - **Network**: Allow inbound UDP 514 and SSH 22
 - **Public IP**: Required for syslog ingestion
+- **Proxy**: If required
+- **SSL Certs**: If required
 
 ### 2. Network Security Group Configuration
 
@@ -38,7 +40,6 @@ curl -s https://ipv4.icanhazip.com
 # Configure NSG to allow:
 # - SSH (22/tcp) from your IP
 # - Syslog (514/udp) from Cisco ASA networks
-# - HTTPS (443/tcp) outbound for MDCA communication
 ```
 
 ### 3. Docker Installation
@@ -58,12 +59,14 @@ sudo usermod -aG docker $USER
 ### 4. MDCA Log Collector Deployment
 
 Deploy the log collector container:
+PUBLICIP: The VM'S PRIVATE IP used to configure the data connector in MDCA.
+AUTH_TOKEN: The value provided via (echo 918285354a40f0ceda695e162befd26b65bde8d0e8de5b0f80a63a1c254e65ca) from MDCA Setup / Data Connector
 ```bash
 docker run -d \
   --name cisco_asa_fp_logcollector \
   --privileged \
   -p 514:514/udp \
-  -e "PUBLICIP='<YOUR_VM_PUBLIC_IP>'" \
+  -e "PUBLICIP='10.0.0.4'" \
   -e "PROXY=" \
   -e "SYSLOG=true" \
   -e "CONSOLE=<YOUR_MDCA_TENANT>.portal.cloudappsecurity.com" \
@@ -77,6 +80,7 @@ docker run -d \
 
 **Required Parameters:**
 - `<YOUR_VM_PUBLIC_IP>`: Azure VM's public IP address
+- `<YOUR_VM_PRIVATE_IP>`: Azure VM's private IP address
 - `<YOUR_MDCA_TENANT>`: Your MDCA tenant identifier
 - `<YOUR_AUTH_TOKEN>`: Authentication token from MDCA portal
 
@@ -128,6 +132,7 @@ Host azure-mdca-vm
     HostName <YOUR_VM_PUBLIC_IP>
     User azureuser
     IdentityFile ~/.ssh/<YOUR_PRIVATE_KEY>.pem
+    IdentitiesOnly yes
     StrictHostKeyChecking no
 ```
 
@@ -135,7 +140,7 @@ Host azure-mdca-vm
 
 ## Testing and Validation
 
-### Test Script Usage
+### Test Script Usage on your Azure Linux VM (Ubuntu 24.04 LTS)
 
 Use the included test script to simulate syslog traffic:
 
@@ -166,8 +171,12 @@ tail -f /var/adallom/syslog/514/messages
 
 1. Navigate to **Data sources** tab
 2. Verify collector shows **Connected** status
-3. Check **Last data received** timestamp
-4. Monitor **Uploaded logs** count
+   <img width="1104" height="456" alt="image (1)" src="https://github.com/user-attachments/assets/39657554-c60f-4a34-889c-5363f83e54e0" />
+
+4. Check **Last data received** timestamp
+5. Monitor **Uploaded logs** count
+   <img width="1104" height="456" alt="image (1)" src="https://github.com/user-attachments/assets/bf95feb9-6e7e-439b-823b-c680d1db1c61" />
+   
 
 ## Troubleshooting
 
