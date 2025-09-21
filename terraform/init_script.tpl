@@ -8,10 +8,16 @@ set -x
 
 # Variables
 ADMIN_USER="${admin_username}"
+AUTH_TOKEN="${mdca_auth_token}"
+CONSOLE_URL="${mdca_console_url}"
+COLLECTOR_NAME="${mdca_collector_name}"
 LOG_FILE="/var/log/init_script.log"
 
 # Create and decode the script file
 echo "${mdca_script_content}" | base64 -d > /home/${admin_username}/mdca_send_msgs.sh
+
+mkdir -p /home/${admin_username}/data
+chown -R ${admin_username}:${admin_username} /home/${admin_username}/data
 
 touch /home/$ADMIN_USER/.hushlogin
 chown $ADMIN_USER:$ADMIN_USER /home/$ADMIN_USER/.hushlogin
@@ -90,6 +96,7 @@ log_message "Creating MDCA directory..."
 mkdir -p "/home/$ADMIN_USER/mdca"
 
 
+
 # Set up firewall rules (if ufw is enabled)
 #if systemctl is-active --quiet ufw; then
 #    log_message "Configuring firewall rules..."
@@ -97,7 +104,6 @@ mkdir -p "/home/$ADMIN_USER/mdca"
 #    ufw allow 514/udp comment 'Syslog'
 #    ufw allow out 443/tcp comment 'HTTPS outbound'
 #fi
-
 
 
 # Create useful aliases for the admin user
@@ -137,11 +143,6 @@ cat > "/home/$ADMIN_USER/mdca/deploy_collector.sh" << EOF
 # MDCA Log Collector Deployment Script
 # Usage: ./deploy_collector.sh <AUTH_TOKEN>
 
-if [ \$# -ne 1 ]; then
-    echo "Usage: \$0 <AUTH_TOKEN>"
-    echo "Example: \$0 918285354d40f0cedc695a162bbfd26b65bbc8d0e5ce5b0f80a63a1c254e1702"
-    exit 1
-fi
 
 # Auto-detect public IP from eth0 interface
 PUBLIC_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
@@ -153,37 +154,36 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
-
-AUTH_TOKEN="\$1"
-CONSOLE_URL="daveanddaveus.us3.portal.cloudappsecurity.com"
-COLLECTOR_NAME="cisco_asa_fp_logcollector"
-PUBLIC_IP="\$PUBLIC_IP"
+MDCA_AUTH_TOKEN="$AUTH_TOKEN"
+MDCA_CONSOLE_URL="$CONSOLE_URL"
+MDCA_COLLECTOR_NAME="$COLLECTOR_NAME"
 
 echo "Deploying MDCA log collector..."
-echo "Console: \$CONSOLE_URL"
-echo "Collector: \$COLLECTOR_NAME"
-echo "Public IP: \$PUBLIC_IP"
+echo "Auth Token: \$MDCA_AUTH_TOKEN"
+echo "Console Url: \$MDCA_CONSOLE_URL"
+echo "Collector: \$MDCA_COLLECTOR_NAME"
+echo "Collector IP: \$PUBLIC_IP"
 
 # This command works!
-# docker run -d --name CISCO_FP_TFAI --privileged -p 10.0.1.4:514:514/udp -e "PUBLICIP='10.0.1.4'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=daveanddaveus.us3.portal.cloudappsecurity.com" -e "COLLECTOR=CISCO_FP_TFAI" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo 'PASTE_YOUR_AUTH_TOKEN_HERE' | /etc/adallom/scripts/starter"
+# docker run -d --name CISCO_FP_TFAI --privileged -p 10.0.1.4:514:514/udp -e "PUBLICIP='10.0.1.4'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=daveanddaveus.us3.portal.cloudappsecurity.com" -e "COLLECTOR=CISCO_FP_TFAI" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo $\MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 
 docker run -d \\
-  --name \$COLLECTOR_NAME \\
+  --name \$MDCA_COLLECTOR_NAME \\
   --privileged \\
   -p \$PUBLIC_IP:514:514/udp \\
   -e "PUBLICIP='\$PUBLIC_IP'" \\
   -e "PROXY=" \\
   -e "SYSLOG=true" \\
-  -e "CONSOLE=\$CONSOLE_URL" \\
-  -e "COLLECTOR=\$COLLECTOR_NAME" \\
+  -e "CONSOLE=\$MDCA_CONSOLE_URL" \\
+  -e "COLLECTOR=\$MDCA_COLLECTOR_NAME" \\
   --cap-add=SYS_ADMIN \\
   --cap-add=SYSLOG \\
   --restart unless-stopped \\
   mcr.microsoft.com/mcas/logcollector \\
-  /bin/bash -c "echo \$AUTH_TOKEN | /etc/adallom/scripts/starter"
+  /bin/bash -c "echo \$MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 
 echo "MDCA log collector deployed successfully!"
-echo "Check status with: docker logs \$COLLECTOR_NAME"
+echo "Check status with: docker logs \$MDCA_COLLECTOR_NAME"
 EOF
 
 chmod +x "/home/$ADMIN_USER/mdca/deploy_collector.sh"
@@ -265,6 +265,8 @@ touch "/home/$ADMIN_USER/mdca/.init_complete"
 echo "$(date)" > "/home/$ADMIN_USER/mdca/.init_complete"
 
 chown -R ${admin_username}:${admin_username} /home/${admin_username}/mdca/*
+
+bash /home/${admin_username}/mdca/deploy_collector.sh
 
 # Display summary
 log_message "=== Initialization Summary ==="
