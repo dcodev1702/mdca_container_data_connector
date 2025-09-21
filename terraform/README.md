@@ -1,4 +1,4 @@
-# MDCA Demo Terraform Deployment
+# MDCA Demo via Terraform Deployment
 
 This Terraform configuration creates a complete Azure infrastructure for Microsoft Defender for Cloud Apps (MDCA) log collector demonstration.
 
