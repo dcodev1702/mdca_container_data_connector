@@ -51,11 +51,11 @@ locals {
 # Create Resource Group
 resource "azurerm_resource_group" "mdca_demo" {
   name     = "mdca-demo-rg-${local.suffix}"
-  location = "East US 2"
+  location = "${var.location}"
 
   tags = {
-    Environment = "Demo"
-    Project     = "MDCA"
+    Environment = "${var.tag_env}"
+    Project     = "${var.tag_proj}"
     CreatedBy   = "Terraform.AI"
   }
 }
@@ -63,13 +63,13 @@ resource "azurerm_resource_group" "mdca_demo" {
 # Create Virtual Network
 resource "azurerm_virtual_network" "mdca_demo" {
   name                = "mdca-demo-vnet-${local.suffix}"
-  address_space       = ["10.0.0.0/16"]
+  address_space       = "${var.network_vnet_cidr}"
   location            = azurerm_resource_group.mdca_demo.location
   resource_group_name = azurerm_resource_group.mdca_demo.name
 
   tags = {
-    Environment = "Demo"
-    Project     = "MDCA"
+    Environment = "${var.tag_env}"
+    Project     = "${var.tag_proj}"
   }
 }
 
@@ -78,7 +78,7 @@ resource "azurerm_subnet" "mdca_demo" {
   name                 = "mdca-demo-subnet-${local.suffix}"
   resource_group_name  = azurerm_resource_group.mdca_demo.name
   virtual_network_name = azurerm_virtual_network.mdca_demo.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = "${var.vm_subnet_cidr}"
 }
 
 # Create SSH Key
@@ -123,13 +123,13 @@ resource "azurerm_network_security_group" "mdca_demo" {
     source_port_range          = "*"
     destination_port_range     = "514"
     source_address_prefix      = "${local.home_wan_ip}/32"
-    destination_address_prefix = "10.0.1.4"
+    destination_address_prefix = "${var.vm_private_ip}"
   }
 
 
   tags = {
-    Environment = "Demo"
-    Project     = "MDCA"
+    Environment = "${var.tag_env}"
+    Project     = "${var.tag_proj}"
   }
 }
 
@@ -142,8 +142,8 @@ resource "azurerm_public_ip" "mdca_demo" {
   sku                 = "Standard"
 
   tags = {
-    Environment = "Demo"
-    Project     = "MDCA"
+    Environment = "${var.tag_env}"
+    Project     = "${var.tag_proj}"
   }
 }
 
@@ -157,13 +157,13 @@ resource "azurerm_network_interface" "mdca_demo" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.mdca_demo.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.1.4"
+    private_ip_address            = "${var.vm_private_ip}"
     public_ip_address_id          = azurerm_public_ip.mdca_demo.id
   }
 
   tags = {
-    Environment = "Demo"
-    Project     = "MDCA"
+    Environment = "${var.tag_env}"
+    Project     = "${var.tag_proj}"
   }
 }
 
@@ -184,8 +184,8 @@ resource "azurerm_linux_virtual_machine" "mdca_demo" {
   name                            = "mdca-demo-vm-${local.suffix}"
   location                        = azurerm_resource_group.mdca_demo.location
   resource_group_name             = azurerm_resource_group.mdca_demo.name
-  size                            = "Standard_D2s_v3"
-  admin_username                  = "lorenzoadm"
+  size                            = "${var.vm_size}"
+  admin_username                  = "${var.vm_username}"
   disable_password_authentication = true
 
   # Disable monitoring
@@ -198,7 +198,7 @@ resource "azurerm_linux_virtual_machine" "mdca_demo" {
   ]
 
   admin_ssh_key {
-    username   = "lorenzoadm"
+    username   = "${var.vm_username}"
     public_key = tls_private_key.mdca_demo.public_key_openssh
   }
 
@@ -222,13 +222,57 @@ resource "azurerm_linux_virtual_machine" "mdca_demo" {
 
   # Custom data script
   custom_data = base64encode(templatefile("${path.module}/init_script.tpl", { 
-    admin_username = "lorenzoadm"
+    admin_username      = "${var.vm_username}"
+    mdca_auth_token     = "${var.mdca_auth_token}"
+    mdca_console_url    = "${var.mdca_console_url}"
+    mdca_collector_name = "${var.mdca_collector_name}"
     mdca_script_content = base64encode(file("${path.module}/vm_files/mdca_send_msgs.sh"))
    }))
 
+  # Add file provisioners for the large files
+  provisioner "file" {
+    source      = "${path.module}/vm_files/cisco_asa_fp_c.ai2k.log"
+    destination = "/home/${var.admin_username}/data/cisco_asa_fp_c.ai2k.log"
+    
+    connection {
+      type        = "ssh"
+      user        = var.admin_username
+      private_key = tls_private_key.mdca_demo.private_key_pem
+      host        = self.public_ip_address
+    }
+  }
+
+  provisioner "file" {
+    source      = "${path.module}/vm_files/cisco_asa_fp_c.ai.log"
+    destination = "/home/${var.admin_username}/data/cisco_asa_fp_c.ai.log"
+    
+    connection {
+      type        = "ssh"
+      user        = var.admin_username
+      private_key = tls_private_key.mdca_demo.private_key_pem
+      host        = self.public_ip_address
+    }
+  }
+
+  # Make the script executable and move files to final location
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown ${var.admin_username}:${var.admin_username} /home/${var.admin_username}/data/cisco_asa_fp_c.ai2k.log",
+      "sudo chown ${var.admin_username}:${var.admin_username} /home/${var.admin_username}/data/cisco_asa_fp_c.ai.log"
+    ]
+    
+    connection {
+      type        = "ssh"
+      user        = var.admin_username
+      private_key = tls_private_key.mdca_demo.private_key_pem
+      host        = self.public_ip_address
+    }
+  }
+
+   
   tags = {
-    Environment = "Demo"
-    Project     = "MDCA"
+    Environment = "${var.tag_env}"
+    Project     = "${var.tag_proj}"
   }
 }
 
@@ -236,7 +280,7 @@ resource "azurerm_linux_virtual_machine" "mdca_demo" {
 resource "local_file" "ssh_config" {
   content = templatefile("${path.module}/windows_ssh_vscode.tpl", {
     vm_public_ip = azurerm_public_ip.mdca_demo.ip_address
-    admin_user   = "lorenzoadm"
+    admin_user   = "${var.vm_username}"
     private_key  = "mdca-demo-ub24-${local.suffix}_key.pem"
     suffix       = local.suffix
   })
