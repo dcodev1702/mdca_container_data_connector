@@ -88,13 +88,9 @@ log_message "Verifying Docker installation..."
 docker --version
 docker images
 
-# Update pip and install ansible and other popular python modules
-# sudo python3 -m pip install --upgrade pip
-
 # Create directories for MDCA setup
 log_message "Creating MDCA directory..."
 mkdir -p "/home/$ADMIN_USER/mdca"
-
 
 
 # Set up firewall rules (if ufw is enabled)
