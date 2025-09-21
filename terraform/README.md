@@ -142,11 +142,7 @@ From the MDCA portal:
 
 Use the helper script on the VM:
 ```bash
-/opt/mdca/deploy_collector.sh \
-  "<AUTH_TOKEN>" \
-  "<TENANT>.portal.cloudappsecurity.com" \
-  "cisco_asa_fp_logcollector" \
-  "<VM_PUBLIC_IP>"
+/opt/mdca/deploy_collector.sh <YOUR_AUTH_TOKEN>
 ```
 
 Or use the full Docker command from terraform output.
