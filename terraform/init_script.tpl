@@ -1,0 +1,287 @@
+#!/bin/bash
+
+# MDCA Demo VM Initialization Script
+# Installs Docker and pulls MDCA log collector image
+
+set -e
+set -x
+
+# Variables
+ADMIN_USER="${admin_username}"
+LOG_FILE="/var/log/init_script.log"
+
+# Create and decode the script file
+echo "${mdca_script_content}" | base64 -d > /home/${admin_username}/mdca_send_msgs.sh
+
+touch /home/$ADMIN_USER/.hushlogin
+chown $ADMIN_USER:$ADMIN_USER /home/$ADMIN_USER/.hushlogin
+
+# Function to log messages
+log_message() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a $LOG_FILE
+}
+
+log_message "Starting MDCA Demo VM initialization..."
+
+# Update system packages
+log_message "Updating system packages..."
+apt-get update -y
+apt-get upgrade -y
+
+# Install required packages
+log_message "Installing required packages..."
+apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release \
+    software-properties-common \
+    unzip \
+    gcc \
+    g++ \
+    python3-dev \
+    python3-pip \
+    wget \
+    neofetch \
+    nnn \
+    dos2unix \
+    net-tools \
+    htop \
+    tree \
+    vim
+
+
+# Fix script & set proper permissions
+log_message "Fix bash script & set proper permissions"
+dos2unix /home/${admin_username}/mdca_send_msgs.sh
+
+chmod +x /home/${admin_username}/mdca_send_msgs.sh
+chown ${admin_username}:${admin_username} /home/${admin_username}/mdca_send_msgs.sh
+
+# Install Docker using official script
+log_message "Installing Docker..."
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+# Add admin user to docker group
+log_message "Adding $ADMIN_USER to docker group..."
+usermod -aG docker $ADMIN_USER
+
+# Start and enable Docker service
+log_message "Starting Docker service..."
+systemctl start docker
+systemctl enable docker
+
+# Pull MDCA log collector image
+log_message "Pulling MDCA log collector image..."
+docker pull mcr.microsoft.com/mcas/logcollector
+
+# Verify Docker installation
+log_message "Verifying Docker installation..."
+docker --version
+docker images
+
+# Update pip and install ansible and other popular python modules
+# sudo python3 -m pip install --upgrade pip
+
+# Create directories for MDCA setup
+log_message "Creating MDCA directory..."
+mkdir -p "/home/$ADMIN_USER/mdca"
+
+
+# Set up firewall rules (if ufw is enabled)
+#if systemctl is-active --quiet ufw; then
+#    log_message "Configuring firewall rules..."
+#    ufw allow 22/tcp comment 'SSH'
+#    ufw allow 514/udp comment 'Syslog'
+#    ufw allow out 443/tcp comment 'HTTPS outbound'
+#fi
+
+
+
+# Create useful aliases for the admin user
+log_message "Setting up user aliases..."
+cat >> "/home/$ADMIN_USER/.bashrc" << EOF
+
+# MDCA Demo aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias mdca-logs='docker logs cisco_asa_fp_logcollector'
+alias mdca-exec='docker exec -it cisco_asa_fp_logcollector bash'
+alias mdca-status='docker ps | grep logcollector'
+alias mdca-remove='docker rm -f cisco_asa_fp_logcollector'
+
+# Docker aliases
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias di='docker images'
+alias dlog='docker logs'
+
+# System monitoring
+alias ports='netstat -tuln'
+alias diskspace='df -h'
+alias meminfo='free -m'
+EOF
+
+# Set proper ownership
+chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/.bashrc"
+
+
+# Create a sample MDCA deployment script
+log_message "Creating MDCA deployment helper script..."
+cat > "/home/$ADMIN_USER/mdca/deploy_collector.sh" << EOF
+#!/bin/bash
+
+# MDCA Log Collector Deployment Script
+# Usage: ./deploy_collector.sh <AUTH_TOKEN>
+
+if [ \$# -ne 1 ]; then
+    echo "Usage: \$0 <AUTH_TOKEN>"
+    echo "Example: \$0 918285354d40f0cedc695a162bbfd26b65bbc8d0e5ce5b0f80a63a1c254e1702"
+    exit 1
+fi
+
+# Auto-detect public IP from eth0 interface
+PUBLIC_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
+
+if [ -z "\$PUBLIC_IP" ]; then
+    echo "Error: Could not detect IP address from eth0 interface"
+    echo "Available network interfaces:"
+    ip addr show | grep -E '^[0-9]+:' | awk '{print $2}' | sed 's/://'
+    exit 1
+fi
+
+
+AUTH_TOKEN="\$1"
+CONSOLE_URL="daveanddaveus.us3.portal.cloudappsecurity.com"
+COLLECTOR_NAME="cisco_asa_fp_logcollector"
+PUBLIC_IP="\$PUBLIC_IP"
+
+echo "Deploying MDCA log collector..."
+echo "Console: \$CONSOLE_URL"
+echo "Collector: \$COLLECTOR_NAME"
+echo "Public IP: \$PUBLIC_IP"
+
+# This command works!
+# docker run -d --name CISCO_FP_TFAI --privileged -p 10.0.1.4:514:514/udp -e "PUBLICIP='10.0.1.4'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=daveanddaveus.us3.portal.cloudappsecurity.com" -e "COLLECTOR=CISCO_FP_TFAI" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo 'PASTE_YOUR_AUTH_TOKEN_HERE' | /etc/adallom/scripts/starter"
+
+docker run -d \\
+  --name \$COLLECTOR_NAME \\
+  --privileged \\
+  -p \$PUBLIC_IP:514:514/udp \\
+  -e "PUBLICIP='\$PUBLIC_IP'" \\
+  -e "PROXY=" \\
+  -e "SYSLOG=true" \\
+  -e "CONSOLE=\$CONSOLE_URL" \\
+  -e "COLLECTOR=\$COLLECTOR_NAME" \\
+  --cap-add=SYS_ADMIN \\
+  --cap-add=SYSLOG \\
+  --restart unless-stopped \\
+  mcr.microsoft.com/mcas/logcollector \\
+  /bin/bash -c "echo \$AUTH_TOKEN | /etc/adallom/scripts/starter"
+
+echo "MDCA log collector deployed successfully!"
+echo "Check status with: docker logs \$COLLECTOR_NAME"
+EOF
+
+chmod +x "/home/$ADMIN_USER/mdca/deploy_collector.sh"
+chown -R $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/deploy_collector.sh"
+
+# Create system info script
+log_message "Creating system info script..."
+cat > "/home/$ADMIN_USER/mdca/system_info.sh" << EOF
+#!/bin/bash
+
+echo "=== MDCA Demo VM System Information ==="
+echo "Date: $(date)"
+echo "Hostname: $(hostname)"
+echo "Public IP: $(curl -s https://ipv4.icanhazip.com)"
+echo "Private IP: $(hostname -I | awk '{print $1}')"
+echo ""
+echo "=== System Resources ==="
+echo "CPU: $(nproc) cores"
+echo "Memory: $(free -h | awk '/^Mem:/ {print $2}')"
+echo "Disk: $(df -h / | awk 'NR==2 {print $2}')"
+echo ""
+echo "=== Docker Information ==="
+docker --version
+echo "Docker status: $(systemctl is-active docker)"
+echo "Docker images:"
+docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"
+echo ""
+echo "=== Network Information ==="
+echo "Listening ports:"
+netstat -peauln
+echo ""
+echo ""
+echo "=== MDCA Log Collector Status ==="
+if docker ps | grep -q logcollector; then
+    echo "MDCA log collector is running"
+    docker ps | grep logcollector
+else
+    echo "MDCA log collector is not running"
+fi
+EOF
+
+chmod +x "/home/$ADMIN_USER/mdca/system_info.sh"
+chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/system_info.sh"
+
+# Set up log rotation for MDCA demo logs
+log_message "Setting up log rotation..."
+cat > /etc/logrotate.d/mdca-demo << EOF
+/var/log/mdca-demo.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 644 syslog adm
+    postrotate
+        systemctl reload rsyslog
+    endscript
+}
+EOF
+
+# Clean up
+log_message "Cleaning up installation files..."
+rm -f get-docker.sh
+
+# Final system update
+log_message "Final system cleanup..."
+
+# Remove App Armor or else the RSYSLOG in the MDCA Container will NOT WORK PROPERLY!
+# TODO: Still troubleshooting the issue. 
+apt-get remove --purge apparmor apparmor-utils -y
+
+apt-get autoremove -y
+apt-get autoclean
+
+# Create completion marker
+log_message "MDCA Demo VM initialization completed successfully!"
+touch "/home/$ADMIN_USER/mdca/.init_complete"
+echo "$(date)" > "/home/$ADMIN_USER/mdca/.init_complete"
+
+chown -R ${admin_username}:${admin_username} /home/${admin_username}/mdca/*
+
+# Display summary
+log_message "=== Initialization Summary ==="
+log_message "✓ System packages updated"
+log_message "✓ Docker installed and configured"
+log_message "✓ MDCA log collector image pulled"
+log_message "✓ User $ADMIN_USER added to docker group"
+log_message "✓ Firewall configured (if ufw enabled)"
+log_message "✓ Helper scripts created in /opt/mdca/"
+log_message "✓ System aliases configured"
+log_message "✓ Log rotation configured"
+log_message ""
+log_message "Next steps:"
+log_message "1. SSH to the VM: ssh -i <key> $ADMIN_USER@<public_ip>"
+log_message "2. Run system info: /home/$ADMIN_USER/mdca/system_info.sh"
+log_message "3. Deploy MDCA collector: /home/$ADMIN_USER/mdca/deploy_collector.sh <token> <console> <name> <ip>"
+log_message ""
+log_message "MDCA Demo VM is ready for use!"
+
+init 6
