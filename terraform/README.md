@@ -167,13 +167,13 @@ ls -lah messages
 
 ```bash
 # From any machine that can reach the VM
-echo '<14>Test syslog message from Cisco ASA' | nc -u <VM_PUBLIC_IP> 514
+echo '<14>Test syslog message from Cisco ASA' | timeout 0.2 nc -u $PUBLIC_IP 514
 ```
 
 ### 2. Monitor Collection
 
 ```bash
-# On the VM, watch the messages file
+# On the VM, watch the messages file (has to be greater than 40 KB)
 watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
 
 # View real-time syslog
@@ -197,10 +197,10 @@ cd /tmp && ./mdca_send_msgs.sh
 
 Modify `terraform.tfvars` to customize deployment:
 ```hcl
-location = "West US 2"
+location = "East US 2"
 vm_size = "Standard_B2s"
 admin_username = "azureuser"
-os_disk_size_gb = 64
+os_disk_size_gb = 128
 ```
 
 ### Network Security
