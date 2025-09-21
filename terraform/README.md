@@ -8,13 +8,12 @@ This Terraform configuration creates a complete Azure infrastructure for Microso
 - **Virtual Network**: `mdca-demo-vnet-<random>` (10.0.0.0/16)
 - **Subnet**: `mdca-demo-subnet-<random>` (10.0.1.0/24)
 - **Network Security Group**: `mdca-demo-nsg-<random>`
-  - SSH (22/tcp) from your current IP
-  - Syslog (514/udp) from any IP
-  - HTTPS (443/tcp) outbound
+  - SSH (22/tcp) from your current WAN IP
+  - Syslog (514/udp) from Linux VM
 - **Virtual Machine**: `mdca-demo-vm-<random>`
   - Type: Standard_D2s_v3
   - OS: Ubuntu 24.04 LTS
-  - Disk: 128GB Premium SSD
+  - Disk: 128 GB Premium SSD
   - User: lorenzoadm
   - System Managed Identity enabled
 - **SSH Key Pair**: RSA 4096-bit saved to `C:\Users\User\.ssh\`
