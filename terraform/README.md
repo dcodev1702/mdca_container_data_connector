@@ -23,10 +23,10 @@ This Terraform configuration creates a complete Azure infrastructure for Microso
 
 ## Prerequisites
 
-1. **Azure CLI** installed and authenticated
-2. **Terraform** installed (version >= 1.0)
-3. **Azure subscription** with contributor access
-4. **Windows machine** with `C:\Users\User\.ssh\` directory
+1. **Azure Subscription** and appropriate permissions to deploy resources
+2. **Azure CLI** [installed](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) and authenticated
+3. **Terraform** [installed](https://developer.hashicorp.com/terraform/install) (version >= 1.0)
+5. **Windows machine** with `C:\Users\User\.ssh\` directory
 
 ## Deployment Steps
 
