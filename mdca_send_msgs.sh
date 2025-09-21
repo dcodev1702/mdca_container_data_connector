@@ -9,7 +9,7 @@
 #INPUT_FILE="test.log"
 INPUT_FILE="cisco_asa_fp_c.ai2k.log"
 #INPUT_FILE="cisco_asa_fp_fullLog.log"
-TARGET_IP="10.0.0.4"
+TARGET_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
 TARGET_PORT="514"
 DELAY="0.2"
 
