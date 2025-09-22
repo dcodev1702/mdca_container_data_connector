@@ -137,7 +137,15 @@ cat > "/home/$ADMIN_USER/mdca/deploy_collector.sh" << EOF
 #!/bin/bash
 
 # MDCA Log Collector Deployment Script
-# Usage: ./deploy_collector.sh <AUTH_TOKEN>
+# Usage: ./deploy_collector.sh <MDCA_AUTH_TOKEN> <MDCA_CONSOLE_URL> <COLLECTOR_NAME>
+
+# Check if correct number of parameters provided
+if [ $# -ne 3 ]; then
+    echo "Error: Incorrect number of parameters"
+    echo "Usage: $0 <MDCA_AUTH_TOKEN> <MDCA_CONSOLE_URL> <COLLECTOR_NAME>"
+    echo "Example: $0 918285354d40f0cedc695a162bbfd26b65bbc8d0e5ce5b0f80a63a1c254e1702 company.us3.portal.cloudappsecurity.com cisco_fp_tfai"
+    exit 1
+fi
 
 
 # Auto-detect public IP from eth0 interface
@@ -150,9 +158,9 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
-MDCA_AUTH_TOKEN="$AUTH_TOKEN"
-MDCA_CONSOLE_URL="$CONSOLE_URL"
-MDCA_COLLECTOR_NAME="$COLLECTOR_NAME"
+MDCA_AUTH_TOKEN="$1"
+MDCA_CONSOLE_URL="$2"
+MDCA_COLLECTOR_NAME="$3"
 
 echo "Deploying MDCA log collector..."
 echo "Auth Token: \$MDCA_AUTH_TOKEN"
@@ -161,7 +169,7 @@ echo "Collector: \$MDCA_COLLECTOR_NAME"
 echo "Collector IP: \$PUBLIC_IP"
 
 # This command works!
-# docker run -d --name CISCO_FP_TFAI --privileged -p 10.0.1.4:514:514/udp -e "PUBLICIP='10.0.1.4'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=daveanddaveus.us3.portal.cloudappsecurity.com" -e "COLLECTOR=CISCO_FP_TFAI" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo $\MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
+# docker run -d --name CISCO_FP_TFAI --privileged -p 10.0.1.4:514:514/udp -e "PUBLICIP='10.0.1.4'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=daveanddaveus.us3.portal.cloudappsecurity.com" -e "COLLECTOR=CISCO_FP_TFAI" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo $MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 
 docker run -d \\
   --name \$MDCA_COLLECTOR_NAME \\
@@ -245,7 +253,7 @@ echo "$(date)" > "/home/$ADMIN_USER/mdca/.init_complete"
 
 chown -R ${admin_username}:${admin_username} /home/${admin_username}/mdca/*
 
-bash /home/${admin_username}/mdca/deploy_collector.sh
+bash /home/${admin_username}/mdca/deploy_collector.sh "$AUTH_TOKEN" "$CONSOLE_URL" "$COLLECTOR_NAME"
 
 # Display summary
 log_message "=== Initialization Summary ==="
