@@ -20,8 +20,8 @@ This Terraform configuration creates a complete Azure infrastructure for Microso
 - **SSH Key Pair**: RSA 4096-bit saved to `C:\Users\User\.ssh\`
 - **Public IP**: Static IP for VM access
 - **SSH Config**: VS Code compatible configuration
-- **Test Data Files**: Cisco ASA log files automatically uploaded to VM
-- **MDCA Log Collector**: Automatically deployed and configured container
+- **Test Data Files**: Cisco ASA FirePower log files automatically uploaded to VM
+- **MDCA Log Collector**: Automatically deployed and configured Docker container (SYSLOG 514:UDP)
 
 ## Prerequisites
 
@@ -171,6 +171,13 @@ ls -lah /home/lorenzoadm/data/
 ```bash
 # Execute the system information script
 /home/lorenzoadm/mdca/system_info.sh
+```
+
+### 6. Deployment of MDCA Collector via Docker Container 
+
+```bash
+# Deploy the MDCA Docker Container (listens on PRIVATE_IP:514:UDP)
+/home/lorenzoadm/mdca/deploy_collector.sh
 ```
 
 ## VS Code Remote-SSH Setup
