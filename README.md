@@ -178,8 +178,9 @@ watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
 # View real-time logs
 tail -f /var/adallom/syslog/514/messages
 ```
-
 **Note**: Files rotate and upload to MDCA when they exceed 40KB.
+
+<img width="1372" height="934" alt="image" src="https://github.com/user-attachments/assets/4acfbf5f-2688-42ff-a30f-cc65a4ca1d24" />
 
 ### MDCA Portal Verification
 
