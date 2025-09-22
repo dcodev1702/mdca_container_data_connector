@@ -143,7 +143,7 @@ MDCA_AUTH_TOKEN="${mdca_auth_token}"
 MDCA_CONSOLE_URL="${mdca_console_url}"
 MDCA_COLLECTOR_NAME="${mdca_collector_name}"
 
-# Check container status
+# Check 1: Check the container status (state)
 CONTAINER_STATE=\$(docker inspect -f '{{.State.Status}}' "\$MDCA_COLLECTOR_NAME" 2>/dev/null)
 
 if [ "\$CONTAINER_STATE" = "running" ]; then
@@ -161,13 +161,6 @@ elif [ "\$CONTAINER_STATE" = "exited" ]; then
         exit 1
     fi
     exit 0
-fi
-
-# Check 1: Check to see if container is already running
-if docker ps -q -f name="\$MDCA_COLLECTOR_NAME" | grep -q .; then
-    echo "Error: Container '\$MDCA_COLLECTOR_NAME' is already running"
-    echo "Use 'docker stop \$MDCA_COLLECTOR_NAME' to stop it first"
-    exit 1
 fi
 
 # Auto-detect public IP from eth0 interface
