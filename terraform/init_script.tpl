@@ -139,9 +139,21 @@ cat > "/home/$ADMIN_USER/mdca/deploy_mdca_log_collector.sh" << EOF
 # MDCA Log Collector Deployment Script
 # Usage: ./deploy_mdca_log_collector.sh
 
+MDCA_AUTH_TOKEN="${mdca_auth_token}"
+MDCA_CONSOLE_URL="${mdca_console_url}"
+MDCA_COLLECTOR_NAME="${mdca_collector_name}"
+
+# Check 1: Check to see if container is already running
+if docker ps -q -f name="\$MDCA_COLLECTOR_NAME" | grep -q .; then
+    echo "Error: Container '\$MDCA_COLLECTOR_NAME' is already running"
+    echo "Use 'docker stop \$MDCA_COLLECTOR_NAME' to stop it first"
+    exit 1
+fi
+
 # Auto-detect public IP from eth0 interface
 PUBLIC_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
 
+# Check 2: Validate AUTH_TOKEN format (should be 64 character hex string)
 if [ -z "\$PUBLIC_IP" ]; then
     echo "Error: Could not detect IP address from eth0 interface"
     echo "Available network interfaces:"
@@ -149,11 +161,7 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
-MDCA_AUTH_TOKEN="${mdca_auth_token}"
-MDCA_CONSOLE_URL="${mdca_console_url}"
-MDCA_COLLECTOR_NAME="${mdca_collector_name}"
-
-# Check 1: Validate AUTH_TOKEN format (should be 64 character hex string)
+# Check 3: Validate AUTH_TOKEN format (should be 64 character hex string)
 if ! echo "\$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
     echo "Error: AUTH_TOKEN must be a 64-character hexadecimal string"
     echo "Current token: \$MDCA_AUTH_TOKEN"
@@ -161,7 +169,7 @@ if ! echo "\$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
     exit 1
 fi
 
-# Check 2: Validate CONSOLE_URL format (should contain cloudappsecurity.com)
+# Check 4: Validate CONSOLE_URL format (should contain cloudappsecurity.com)
 if ! echo "\$MDCA_CONSOLE_URL" | grep -qE '\\.portal\\.cloudappsecurity\\.com$'; then
     echo "Error: CONSOLE_URL must end with '.portal.cloudappsecurity.com'"
     echo "Current URL: \$MDCA_CONSOLE_URL"
@@ -169,7 +177,7 @@ if ! echo "\$MDCA_CONSOLE_URL" | grep -qE '\\.portal\\.cloudappsecurity\\.com$';
     exit 1
 fi
 
-# Check 3: Validate COLLECTOR_NAME (alphanumeric, underscores, hyphens only, 3-50 chars)
+# Check 5: Validate COLLECTOR_NAME (alphanumeric, underscores, hyphens only, 3-50 chars)
 if ! echo "\$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
     echo "Error: COLLECTOR_NAME must be 3-50 characters and contain only letters, numbers, underscores, and hyphens"
     echo "Current name: \$MDCA_COLLECTOR_NAME"
