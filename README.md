@@ -65,7 +65,7 @@ sudo usermod -aG docker $USER
 
 ### 3. MDCA Log Collector Deployment
 
-Deploy the log collector container:
+Deploy the log collector container: <br/>
 AUTH_TOKEN: The value provided via (echo 918285354a40f0ceda695e162befd26b65bde8d0e8de5b0f80a63a1c254e65ca) from MDCA Setup / Data Connector <br/>
 PUBLIC_IP: This is the VM's Private IP that you used when setting up the MDCA Log Collector (e.g. 10.0.0.4)
 
