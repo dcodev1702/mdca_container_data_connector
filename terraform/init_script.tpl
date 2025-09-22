@@ -185,7 +185,7 @@ if ! echo "\$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
     exit 1
 fi
 
-echo "Deploying MDCA log collector..."
+echo "Deploying MDCA Log Collector..."
 echo "Auth Token: \$MDCA_AUTH_TOKEN"
 echo "Console Url: \$MDCA_CONSOLE_URL"
 echo "Collector: \$MDCA_COLLECTOR_NAME"
