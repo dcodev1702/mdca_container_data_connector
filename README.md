@@ -39,7 +39,7 @@ curl -s https://ipv4.icanhazip.com
 
 # Configure NSG to allow:
 # - SSH (22/tcp) from your IP
-# - Syslog (514/udp) from Cisco ASA networks
+# - Syslog (514/udp) for log collector network appliance
 ```
 
 ### 3. Docker Installation
