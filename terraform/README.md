@@ -173,7 +173,7 @@ ls -lah /home/lorenzoadm/data/
 /home/lorenzoadm/mdca/system_info.sh
 ```
 
-### 6. Deployment of MDCA Collector via Docker Container 
+### 6. Deployment of MDCA Log Collector via Docker Container 
 
 ```bash
 # Deploy the MDCA Docker Container (listens on PRIVATE_IP:514:UDP)
