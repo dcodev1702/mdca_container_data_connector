@@ -15,8 +15,8 @@ This repository provides a basic guide for deploying Microsoft Defender for Clou
 The solution consists of:
 - Azure Ubuntu VM running Docker
 - MDCA log collector container listening on UDP 514
-- Cisco ASA FirePOWER sending syslog to collector
-- Automated log processing and upload to MDCA portal
+- Cisco ASA FirePOWER sending SYSLOG [514:UDP] to MDCA log collector
+- Automated log processing and upload to the Defender XDR portal -> MDCA
 
 ## Quick Start
 
