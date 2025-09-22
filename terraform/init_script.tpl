@@ -149,31 +149,31 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
-MDCA_AUTH_TOKEN="$AUTH_TOKEN"
-MDCA_CONSOLE_URL="$CONSOLE_URL"
-MDCA_COLLECTOR_NAME="$COLLECTOR_NAME"
+MDCA_AUTH_TOKEN="${mdca_auth_token}"
+MDCA_CONSOLE_URL="${mdca_console_url}"
+MDCA_COLLECTOR_NAME="${mdca_collector_name}"
 
 # Check 1: Validate AUTH_TOKEN format (should be 64 character hex string)
-if ! echo "$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
+if ! echo "\$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
     echo "Error: AUTH_TOKEN must be a 64-character hexadecimal string"
-    echo "Current token: $MDCA_AUTH_TOKEN"
-    echo "Token length: ${#MDCA_AUTH_TOKEN}"
+    echo "Current token: \$MDCA_AUTH_TOKEN"
+    echo "Token length: \$${#MDCA_AUTH_TOKEN}"
     exit 1
 fi
 
 # Check 2: Validate CONSOLE_URL format (should contain cloudappsecurity.com)
-if ! echo "$MDCA_CONSOLE_URL" | grep -qE '\.portal\.cloudappsecurity\.com$'; then
+if ! echo "\$MDCA_CONSOLE_URL" | grep -qE '\\.portal\\.cloudappsecurity\\.com$'; then
     echo "Error: CONSOLE_URL must end with '.portal.cloudappsecurity.com'"
-    echo "Current URL: $MDCA_CONSOLE_URL"
+    echo "Current URL: \$MDCA_CONSOLE_URL"
     echo "Example: company.us3.portal.cloudappsecurity.com"
     exit 1
 fi
 
 # Check 3: Validate COLLECTOR_NAME (alphanumeric, underscores, hyphens only, 3-50 chars)
-if ! echo "$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
+if ! echo "\$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
     echo "Error: COLLECTOR_NAME must be 3-50 characters and contain only letters, numbers, underscores, and hyphens"
-    echo "Current name: $MDCA_COLLECTOR_NAME"
-    echo "Name length: ${#MDCA_COLLECTOR_NAME}"
+    echo "Current name: \$MDCA_COLLECTOR_NAME"
+    echo "Name length: \$${#MDCA_COLLECTOR_NAME}"
     exit 1
 fi
 
@@ -184,7 +184,7 @@ echo "Collector: \$MDCA_COLLECTOR_NAME"
 echo "Collector IP: \$PUBLIC_IP"
 
 # This command works!
-# docker run -d --name CISCO_FP_TFAI --privileged -p 10.0.1.4:514:514/udp -e "PUBLICIP='10.0.1.4'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=daveanddaveus.us3.portal.cloudappsecurity.com" -e "COLLECTOR=CISCO_FP_TFAI" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo $MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
+# docker run -d --name \$MDCA_COLLECTOR_NAME --privileged -p \$PUBLIC_IP:514:514/udp -e "PUBLICIP='\$PUBLIC_IP'" -e "PROXY=" -e "SYSLOG=true" -e "CONSOLE=\$MDCA_CONSOLE_URL" -e "COLLECTOR=\$MDCA_COLLECTOR_NAME" --cap-add=SYS_ADMIN --cap-add=SYSLOG --restart unless-stopped   mcr.microsoft.com/mcas/logcollector /bin/bash -c "echo \$MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 
 docker run -d \\
   --name \$MDCA_COLLECTOR_NAME \\
