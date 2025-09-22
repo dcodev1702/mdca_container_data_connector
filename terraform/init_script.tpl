@@ -284,7 +284,7 @@ log_message ""
 log_message "Next steps:"
 log_message "1. SSH to the VM: ssh -i <key> $ADMIN_USER@<public_ip>"
 log_message "2. Run system info: /home/$ADMIN_USER/mdca/system_info.sh"
-log_message "3. Run ./mdca_send_msgs.sh to send data to Defender XDR via the MDCA Log Collector
+log_message "3. Run ./mdca_send_msgs.sh to send data to Defender XDR via the MDCA Log Collector"
 log_message ""
 log_message "MDCA Demo VM is ready for use!"
 
