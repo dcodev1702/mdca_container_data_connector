@@ -24,7 +24,7 @@ The solution consists of:
 
 Deploy an Ubuntu 24.04+ VM in Azure with the following specifications:
 - **Size**: Standard_D2s (minimum)
-- **Storage**: 128GB Premium SSD
+- **Storage**: 128GB Premium SSD (recommend: 256 GB for enterprise workloads)
 - **Network**: Allow inbound UDP 514 and SSH 22
 - **Public IP**: Required for syslog ingestion
 - **Proxy**: If required
