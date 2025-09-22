@@ -42,7 +42,14 @@ curl -s https://ipv4.icanhazip.com
 # - Syslog (514/udp) for log collector network appliance
 ```
 
-### 3. Docker Installation
+### 1. Verify VM Access
+
+```bash
+# Use the SSH Key that you downloaded from Azure
+ssh -i C:/Users/User/.ssh/mdca-demo-vm_key.pem lorenzoadm@<VM_PUBLIC_IP>
+```
+
+### 2. Docker Installation
 
 Connect to your VM and install Docker:
 ```bash
@@ -56,11 +63,12 @@ sh get-docker.sh
 sudo usermod -aG docker $USER
 ```
 
-### 4. MDCA Log Collector Deployment
+### 3. MDCA Log Collector Deployment
 
 Deploy the log collector container:
-PUBLICIP: The VM'S PRIVATE IP used to configure the data connector in MDCA.
 AUTH_TOKEN: The value provided via (echo 918285354a40f0ceda695e162befd26b65bde8d0e8de5b0f80a63a1c254e65ca) from MDCA Setup / Data Connector
+PUBLIC_IP: This is the VM's Private IP that you used when setting up the MDCA Log Collector (e.g. 10.0.0.4)
+
 ```bash
 docker run -d \
   --name cisco_asa_fp_logcollector \
@@ -75,26 +83,27 @@ docker run -d \
   --cap-add=SYSLOG \
   --restart unless-stopped \
   mcr.microsoft.com/mcas/logcollector \
-  /bin/bash -c 'echo "<YOUR_AUTH_TOKEN>" | /etc/adallom/scripts/starter'
+  /bin/bash -c 'echo "<AUTH_TOKEN>" | /etc/adallom/scripts/starter'
 ```
 
 **Required Parameters:**
-- `<YOUR_VM_PUBLIC_IP>`: Azure VM's public IP address
 - `<YOUR_VM_PRIVATE_IP>`: Azure VM's private IP address
 - `<YOUR_MDCA_TENANT>`: Your MDCA tenant identifier
 - `<YOUR_AUTH_TOKEN>`: Authentication token from MDCA portal
 
-### 5. Verification
+### 4. Verification
 
 Check deployment status:
 ```bash
 # View container logs
 docker logs cisco_asa_fp_logcollector
 
-# Access container shell
+# Access container shell to verify log events are finding their way
+# in (SYSLOG 514:TCP) and out (HTTPS 443:TLS 1.2)
 docker exec -it cisco_asa_fp_logcollector bash
 
-# Check syslog message collection
+# Check syslog message as events are ingested
+# The MDCA Container only processes messages the messages file is >40KB
 cd /var/adallom/syslog/514
 ls -lah messages
 ```
@@ -103,15 +112,17 @@ ls -lah messages
 
 ### MDCA Portal Setup
 
-1. Navigate to **Settings** → **Log collectors**
-2. Click **Add log collector**
-3. Configure data source:
+1. Navigate to **Settings** → **MDCA** → **Cloud Discovery** → **Automatic Log Upload** → **Data Sources & Log Collectors**
+2. Click **Add Data Sources**
+3. Configure the Data Source
+4. Click **Add Log Collector**
+5. Configure the Log Collector:
    - **Name**: `CISCO-ASA-FP`
    - **Source**: `Cisco ASA FirePOWER`
-   - **Receiver type**: `Syslog`
-4. Copy the generated authentication token
+   - **Receiver type**: `Syslog | 514 UDP`
+6. Copy the generated authentication token
 
-### Cisco ASA FirePOWER Configuration
+### Cisco ASA FirePOWER Configuration / Network Appliance
 
 Configure syslog forwarding to your Azure VM:
 ```
@@ -137,6 +148,8 @@ Host azure-mdca-vm
 ```
 
 3. **Connect**: `Ctrl+Shift+P` → "Remote-SSH: Connect to Host"
+
+<img width="1373" height="943" alt="image" src="https://github.com/user-attachments/assets/b95bb089-1dd5-46ce-8ffe-69e6d5e6eede" />
 
 ## Testing and Validation
 
