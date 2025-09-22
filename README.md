@@ -192,6 +192,7 @@ tail -f /var/adallom/syslog/514/messages
 5. Monitor **Uploaded logs** count
    <img width="1140" height="431" alt="image" src="https://github.com/user-attachments/assets/cf7898f8-205d-4749-94b6-534bb29a941b" />
 
+   <img width="1441" height="906" alt="image" src="https://github.com/user-attachments/assets/a3d65498-b593-4811-b367-f9e2ce16d668" />
 
 ## Troubleshooting
 
