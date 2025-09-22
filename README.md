@@ -66,7 +66,7 @@ docker run -d \
   --name cisco_asa_fp_logcollector \
   --privileged \
   -p 514:514/udp \
-  -e "PUBLICIP='10.0.0.4'" \
+  -e "PUBLIC_IP='10.0.0.4'" \
   -e "PROXY=" \
   -e "SYSLOG=true" \
   -e "CONSOLE=<YOUR_MDCA_TENANT>.portal.cloudappsecurity.com" \
