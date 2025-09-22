@@ -137,16 +137,7 @@ cat > "/home/$ADMIN_USER/mdca/deploy_collector.sh" << EOF
 #!/bin/bash
 
 # MDCA Log Collector Deployment Script
-# Usage: ./deploy_collector.sh <MDCA_AUTH_TOKEN> <MDCA_CONSOLE_URL> <COLLECTOR_NAME>
-
-# Check if correct number of parameters provided
-if [ $# -ne 3 ]; then
-    echo "Error: Incorrect number of parameters"
-    echo "Usage: $0 <MDCA_AUTH_TOKEN> <MDCA_CONSOLE_URL> <COLLECTOR_NAME>"
-    echo "Example: $0 918285354d40f0cedc695a162bbfd26b65bbc8d0e5ce5b0f80a63a1c254e1702 company.us3.portal.cloudappsecurity.com cisco_fp_tfai"
-    exit 1
-fi
-
+# Usage: ./deploy_collector.sh
 
 # Auto-detect public IP from eth0 interface
 PUBLIC_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
@@ -158,9 +149,9 @@ if [ -z "\$PUBLIC_IP" ]; then
     exit 1
 fi
 
-MDCA_AUTH_TOKEN="$1"
-MDCA_CONSOLE_URL="$2"
-MDCA_COLLECTOR_NAME="$3"
+MDCA_AUTH_TOKEN="$AUTH_TOKEN"
+MDCA_CONSOLE_URL="$CONSOLE_URL"
+MDCA_COLLECTOR_NAME="$COLLECTOR_NAME"
 
 # Check 1: Validate AUTH_TOKEN format (should be 64 character hex string)
 if ! echo "$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
@@ -277,7 +268,7 @@ echo "$(date)" > "/home/$ADMIN_USER/mdca/.init_complete"
 
 chown -R ${admin_username}:${admin_username} /home/${admin_username}/mdca/*
 
-bash /home/${admin_username}/mdca/deploy_collector.sh "$AUTH_TOKEN" "$CONSOLE_URL" "$COLLECTOR_NAME"
+bash /home/${admin_username}/mdca/deploy_collector.sh
 
 # Display summary
 log_message "=== Initialization Summary ==="
