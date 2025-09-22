@@ -81,7 +81,7 @@ mkdir bin
 
 copy terraform.exe C:\Users\User\bin
 ```
-<img width="613" height="581" alt="image" src="https://github.com/user-attachments/assets/c64fbbc1-943c-408d-9ab8-ea043fd7836c" />
+<img width="612" height="579" alt="image" src="https://github.com/user-attachments/assets/086fb2cb-6387-4879-8d95-289c9fdefc1a" />
 
 <img width="644" height="212" alt="image" src="https://github.com/user-attachments/assets/192f9971-0eed-473e-a268-c56e658949cf" />
 
