@@ -224,23 +224,6 @@ EOF
 chmod +x "/home/$ADMIN_USER/mdca/system_info.sh"
 chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/system_info.sh"
 
-# Set up log rotation for MDCA demo logs
-log_message "Setting up log rotation..."
-cat > /etc/logrotate.d/mdca-demo << EOF
-/var/log/mdca-demo.log {
-    daily
-    missingok
-    rotate 7
-    compress
-    delaycompress
-    notifempty
-    create 644 syslog adm
-    postrotate
-        systemctl reload rsyslog
-    endscript
-}
-EOF
-
 # Clean up
 log_message "Cleaning up installation files..."
 rm -f get-docker.sh
