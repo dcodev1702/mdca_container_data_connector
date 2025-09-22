@@ -6,9 +6,9 @@ This repository provides a basic guide for deploying Microsoft Defender for Clou
 
 - Azure subscription with VM deployment permissions
 - Microsoft Defender for Cloud Apps license
-- Cisco ASA FirePOWER appliance configured for syslog
+- Cisco ASA FirePOWER appliance configured for SYSLOG
 - SSH access to Ubuntu VM
-- Basic knowledge of Linux, Containerization, Bash, and Syslog
+- Basic knowledge of Linux, Containerization, Bash, and SYSLOG
 
 ## Architecture Overview
 
