@@ -151,16 +151,14 @@ if [ "\$CONTAINER_STATE" = "running" ]; then
     echo "Use 'docker stop \$MDCA_COLLECTOR_NAME' to stop it first"
     exit 1
 elif [ "\$CONTAINER_STATE" = "exited" ]; then
-    echo "Container '\$MDCA_COLLECTOR_NAME' exists but is stopped. Starting it..."
-    docker start "\$MDCA_COLLECTOR_NAME"
+    echo "Container '\$MDCA_COLLECTOR_NAME' exists but is stopped. Removing it..."
+    docker rm -f "\$MDCA_COLLECTOR_NAME"
     if [ $? -eq 0 ]; then
-        echo "Container '\$MDCA_COLLECTOR_NAME' started successfully!"
-        echo "Check status with: docker logs \$MDCA_COLLECTOR_NAME"
+        echo "Exited container '\$MDCA_COLLECTOR_NAME' removed successfully. Continuing with deployment..."
     else
-        echo "Error: Failed to start container '\$MDCA_COLLECTOR_NAME'"
+        echo "Error: Failed to remove exited container '\$MDCA_COLLECTOR_NAME'"
         exit 1
     fi
-    exit 0
 fi
 
 # Auto-detect public IP from eth0 interface
