@@ -73,6 +73,26 @@ From the Microsoft Defender XDR Portal:
 
 ## Deployment Steps
 
+### 0. Install Terraform & Azure CLI
+```
+cd C:\Users\User
+
+mkdir bin
+
+copy terraform.exe C:\Users\User\bin
+```
+<img width="613" height="581" alt="image" src="https://github.com/user-attachments/assets/c64fbbc1-943c-408d-9ab8-ea043fd7836c" />
+
+<img width="644" height="212" alt="image" src="https://github.com/user-attachments/assets/192f9971-0eed-473e-a268-c56e658949cf" />
+
+```
+az login
+```
+Validate you're successfully logged in via Azure CLI
+```
+az account list
+```
+
 ### 1. Clone and Prepare
 
 ```bash
