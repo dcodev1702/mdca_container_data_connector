@@ -32,6 +32,10 @@ This Terraform configuration creates a complete Azure infrastructure for Microso
 5. **MDCA Authentication Token** from Microsoft Defender XDR Portal
 6. **MDCA Console URL** (e.g., `<tenant>.us3.portal.cloudappsecurity.com`)
 
+<img width="1106" height="435" alt="image" src="https://github.com/user-attachments/assets/56f45ee7-759e-472d-9154-8016a8399ea6" />
+
+<img width="1105" height="412" alt="image" src="https://github.com/user-attachments/assets/777c208a-01b8-4f75-b912-9e7c61f19225" />
+
 ## Configuration Setup
 
 ### 1. Configure Variables
@@ -425,17 +429,17 @@ terraform destroy -auto-approve
 
 ```
 terraform-mdca-demo/
-├── main.tf                    # Main Terraform configuration
-├── variables.tf               # Variable definitions
-├── outputs.tf                 # Output values
-├── terraform.tfvars          # Configuration values
-├── init_script.tpl           # VM initialization script
-├── windows_ssh_vscode.tpl    # SSH config template
-├── vm_files/                 # Files uploaded to VM
-│   ├── mdca_send_msgs.sh     # Syslog test script
+├── main.tf                      # Main Terraform configuration
+├── variables.tf                 # Variable definitions
+├── outputs.tf                   # Output values
+├── terraform.tfvars             # Configuration values
+├── init_script.tpl              # VM initialization script
+├── windows_ssh_vscode.tpl       # SSH config template
+├── vm_files/                    # Files uploaded to VM
+│   ├── mdca_send_msgs.sh        # Syslog test script
 │   ├── cisco_asa_fp_c.ai.log    # Test log file (smaller)
 │   └── cisco_asa_fp_c.ai2k.log  # Test log file (larger)
-└── README.md                 # This file
+└── README.md                    # This file
 ```
 
 ## Important Notes
@@ -456,10 +460,10 @@ terraform-mdca-demo/
 
 ### Container Behavior
 
-- MDCA container requires >40KB of data before processing begins
+- MDCA container requires >40KB of data before processing `/var/adallom/syslog/514/messages` begins
 - AppArmor is automatically removed to prevent rsyslog issues
 - Container automatically restarts unless stopped manually
-- All syslog data is preserved in `/var/adallom/syslog/514/messages`
+- Syslog data is temporarily stored in `/var/adallom/syslog/514/messages` then to `/var/adallom/syslog/rotated/514/messages-DTG` before going to MDCA for analysis.
 
 ## Support
 
