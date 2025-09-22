@@ -40,7 +40,7 @@ This Terraform configuration creates a complete Azure infrastructure for Microso
 
 ### 1. Configure Variables
 
-Edit `terraform.tfvars` with your specific values:
+Edit `terraform.tfvars` with your specific values: <br/>
 MDCA values (3) are provided via the Defender XDR portal -> Settings -> MDCA -> Cloud Discovery -> Automatic Log Upload -> Add Data Source
 
 ```hcl
