@@ -8,7 +8,7 @@ This repository provides a complete guide for deploying Microsoft Defender for C
 - Microsoft Defender for Cloud Apps license
 - Cisco ASA FirePOWER appliance configured for syslog
 - SSH access to Ubuntu VM
-- Basic knowledge of Docker and syslog
+- Basic knowledge of Linux, Containerization, Bash, and Syslog
 
 ## Architecture Overview
 
