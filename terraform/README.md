@@ -107,7 +107,7 @@ Review the plan to ensure:
 ### 4. Deploy Infrastructure
 
 ```bash
-terraform apply
+terraform apply -auto-approve
 ```
 
 Type `yes` when prompted. Deployment takes 10-15 minutes including:
@@ -233,6 +233,9 @@ echo '<14>Test syslog message from Cisco ASA' | timeout 0.2 nc -u <VM_PUBLIC_IP>
 ### 3. Monitor Message Collection
 
 ```bash
+# From the CLI of the VM, Docker Exec into the MDCA Container:
+docker exec -it CISCO_FP_TFAI bash
+
 # Watch the messages file (needs to be >40KB for MDCA processing)
 watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
 
@@ -267,7 +270,7 @@ INPUT_FILE="./data/cisco_asa_fp_c.ai2k.log" ./mdca_send_msgs.sh
 
 ### Pre-loaded Test Data
 
-- Cisco ASA log files automatically uploaded
+- Cisco ASA FirePOWER log files automatically uploaded
 - Ready-to-use test script for immediate validation
 - Multiple file sizes for different testing scenarios
 
@@ -399,6 +402,9 @@ bash -x /home/lorenzoadm/mdca_send_msgs.sh
 # Container status
 docker ps -a | grep logcollector
 
+# Deploy container
+./mdca/deploy_collector.sh
+
 # Network connectivity
 ss -tulpn | grep :514
 
@@ -410,7 +416,7 @@ find /var/adallom -name "messages" -exec ls -lah {} \; 2>/dev/null
 
 To destroy all created resources:
 ```bash
-terraform destroy
+terraform destroy -auto-approve
 ```
 
 **Warning**: This will permanently delete all resources, data, and configuration.
