@@ -164,6 +164,7 @@ chmod +x mdca_send_msgs.sh
 # Run test
 ./mdca_send_msgs.sh
 ```
+<img width="1372" height="937" alt="image" src="https://github.com/user-attachments/assets/9726581b-7fd1-4994-aec5-aa4552e3a41b" />
 
 The script sends sample Cisco ASA FirePOWER logs to the collector for testing.
 
