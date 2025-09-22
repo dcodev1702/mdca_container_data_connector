@@ -131,13 +131,13 @@ EOF
 chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/.bashrc"
 
 
-# Create a sample MDCA deployment script
+# Create a sample MDCA Log Collector deployment script
 log_message "Creating MDCA deployment helper script..."
-cat > "/home/$ADMIN_USER/mdca/deploy_collector.sh" << EOF
+cat > "/home/$ADMIN_USER/mdca/deploy_mdca_log_collector.sh" << EOF
 #!/bin/bash
 
 # MDCA Log Collector Deployment Script
-# Usage: ./deploy_collector.sh
+# Usage: ./deploy_mdca_log_collector.sh
 
 # Auto-detect public IP from eth0 interface
 PUBLIC_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
@@ -205,8 +205,8 @@ echo "MDCA log collector deployed successfully!"
 echo "Check status with: docker logs \$MDCA_COLLECTOR_NAME"
 EOF
 
-chmod +x "/home/$ADMIN_USER/mdca/deploy_collector.sh"
-chown -R $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/deploy_collector.sh"
+chmod +x "/home/$ADMIN_USER/mdca/deploy_mdca_log_collector.sh"
+chown -R $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/deploy_mdca_log_collector.sh"
 
 # Create system info script
 log_message "Creating system info script..."
@@ -268,7 +268,7 @@ echo "$(date)" > "/home/$ADMIN_USER/mdca/.init_complete"
 
 chown -R ${admin_username}:${admin_username} /home/${admin_username}/mdca/*
 
-bash /home/${admin_username}/mdca/deploy_collector.sh
+bash /home/${admin_username}/mdca/deploy_mdca_log_collector.sh
 
 # Display summary
 log_message "=== Initialization Summary ==="
@@ -279,12 +279,12 @@ log_message "✓ User $ADMIN_USER added to docker group"
 log_message "✓ Firewall configured (if ufw enabled)"
 log_message "✓ Helper scripts created in /opt/mdca/"
 log_message "✓ System aliases configured"
-log_message "✓ Log rotation configured"
+log_message "✓ MDCA Log Collector deployed"
 log_message ""
 log_message "Next steps:"
 log_message "1. SSH to the VM: ssh -i <key> $ADMIN_USER@<public_ip>"
 log_message "2. Run system info: /home/$ADMIN_USER/mdca/system_info.sh"
-log_message "3. Deploy MDCA collector: /home/$ADMIN_USER/mdca/deploy_collector.sh <token> <console> <name> <ip>"
+log_message "3. Run ./mdca_send_msgs.sh to send data to Defender XDR via the MDCA Log Collector
 log_message ""
 log_message "MDCA Demo VM is ready for use!"
 
