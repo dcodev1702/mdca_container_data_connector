@@ -153,7 +153,7 @@ fi
 # Auto-detect public IP from eth0 interface
 PUBLIC_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)
 
-# Check 2: Validate AUTH_TOKEN format (should be 64 character hex string)
+# Check 2: Validate the Private IP of the Azure VM (Ubuntu)
 if [ -z "\$PUBLIC_IP" ]; then
     echo "Error: Could not detect IP address from eth0 interface"
     echo "Available network interfaces:"
