@@ -1,6 +1,6 @@
 # Microsoft Defender for Cloud Apps - Cisco ASA FirePOWER Log Collector
 
-This repository provides a complete guide for deploying Microsoft Defender for Cloud Apps (MDCA) log collector to ingest Cisco ASA FirePOWER syslog data on Azure Ubuntu VMs.
+This repository provides a basic guide for deploying Microsoft Defender for Cloud Apps (MDCA) Log Collector to ingest Cisco ASA FirePOWER or ANY network appliance via SYSLOG 514:UDP via an Azure Ubuntu VM.
 
 ## Prerequisites
 
