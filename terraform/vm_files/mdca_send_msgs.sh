@@ -37,7 +37,7 @@ while IFS= read -r line; do
     line_count=$((line_count + 1))
     echo "Sending message $line_count: $(echo "$line" | cut -c1-80)..."
     
-    # Send the syslog message via TCP
+    # Send the syslog message via UDP
     echo "$line" | timeout "$DELAY" nc -u "$TARGET_IP" "$TARGET_PORT"
     
     # Wait before sending next message
