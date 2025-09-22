@@ -2,7 +2,7 @@
 
 This Terraform configuration creates a complete Azure infrastructure for Microsoft Defender for Cloud Apps (MDCA) log collector demonstration.
 
-## What Gets Created
+## What Gets Provisioned in Azure
 
 - **Resource Group**: `mdca-demo-rg-<random>`
 - **Virtual Network**: `mdca-demo-vnet-<random>` (10.0.0.0/16)
