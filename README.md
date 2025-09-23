@@ -175,10 +175,10 @@ Monitor the collection process:
 # Watch message file growth
 watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
 
-# View real-time logs (INBOUND)
+# View real-time logs (INBOUND [514:UDP] TO MDCA LOG COLLECTOR CONTAINER)
 tail -f /var/adallom/syslog/514/messages
 
-# View real-time logs (OUTBOUND TO MDCA)
+# View real-time logs (OUTBOUND [443:TCP/TLS1.2] TO DEFENDER XDR -> MDCA)
 tail -f /var/log/adallom/columbus/trace.log
 ```
 **Note**: Files rotate and upload to MDCA when they exceed 40KB.
