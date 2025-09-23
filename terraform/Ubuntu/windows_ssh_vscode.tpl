@@ -15,6 +15,7 @@ Host mdca-demo-vm-${suffix}
     HostName ${vm_public_ip}
     User ${admin_user}
     IdentityFile C:/Users/User/.ssh/${private_key}
+    IdentitiesOnly yes
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
     ServerAliveInterval 60
@@ -25,6 +26,7 @@ Host mdca-${suffix}
     HostName ${vm_public_ip}
     User ${admin_user}
     IdentityFile C:/Users/User/.ssh/${private_key}
+    IdentitiesOnly yes
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
     ServerAliveInterval 60
