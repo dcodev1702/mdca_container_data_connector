@@ -170,7 +170,7 @@ The script sends sample Cisco ASA FirePOWER logs to the collector for testing.
 
 ### Monitoring Log Ingestion
 
-Monitor the collection process:
+Monitor the log collection process:
 ```bash
 # Watch message file growth
 watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
