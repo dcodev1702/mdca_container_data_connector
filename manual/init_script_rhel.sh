@@ -4,6 +4,15 @@
 # Installs Docker and pulls MDCA log collector image
 set -e
 
+# Check if running with sudo privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: This script must be run with sudo privileges"
+    echo "Usage: sudo $0"
+    exit 1
+fi
+
+OS=$(cat /etc/redhat-release)
+
 # Variables
 LOG_FILE="/var/log/init_script.log"
 
@@ -15,7 +24,7 @@ log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a $LOG_FILE
 }
 
-log_message "Starting MDCA Demo VM initialization: $(cat /etc/redhat-release)"
+log_message "Starting MDCA Demo VM initialization: $OS"
 
 # Update system packages
 log_message "Updating system packages..."
@@ -119,7 +128,7 @@ echo "$(date)" > "/home/$USER/.init_complete"
 
 # Display summary
 log_message "=== Initialization Summary ==="
-log_message "✓ System packages updated (RHEL 9.6)"
+log_message "✓ System packages updated"
 log_message "✓ Docker installed and configured"
 log_message "✓ MDCA log collector image pulled"
 log_message "✓ User $USER added to docker group"
@@ -133,7 +142,7 @@ log_message "3. Run system info: /home/$USER/mdca/deploy_mdca_log_collector.sh"
 log_message "4. Run system info: /home/$USER/mdca/system_info.sh"
 log_message "5. Run ./mdca_send_msgs.sh to send data to Defender XDR via the MDCA Log Collector"
 log_message ""
-log_message "MDCA Demo VM (RHEL 9.6) is ready for use!"
+log_message "MDCA Demo VM: $OS is now ready for use!"
 
 # Reboot to ensure all services start properly
 log_message "Reboot your system to finalize configuration when ready..."
