@@ -149,6 +149,18 @@ cd /var/adallom/syslog/514
 ls -lah messages
 ```
 
+### 5. Monitor Log Collection (INBOUND 514:UDP / OUTBOUND 443:TCP:TLS1.2)
+```
+# Watch message file growth (must be > 40KB)
+watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
+
+# View real-time logs (INBOUND [514:UDP] TO MDCA LOG COLLECTOR CONTAINER)
+tail -f /var/adallom/syslog/514/messages
+
+# View real-time logs (OUTBOUND [443:TCP/TLS1.2] TO DEFENDER XDR -> MDCA)
+tail -f /var/log/adallom/columbus/trace.log
+```
+
 ## RHEL-Specific Commands
 
 ### Package Management
