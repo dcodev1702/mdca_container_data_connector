@@ -2,9 +2,7 @@
 
 # MDCA Demo VM Initialization Script - RHEL 9.6 Compatible
 # Installs Docker and pulls MDCA log collector image
-
 set -e
-set -x
 
 # Variables
 LOG_FILE="/var/log/init_script.log"
@@ -17,7 +15,7 @@ log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a $LOG_FILE
 }
 
-log_message "Starting MDCA Demo VM initialization on RHEL 9.6..."
+log_message "Starting MDCA Demo VM initialization: $(cat /etc/redhat-release)"
 
 # Update system packages
 log_message "Updating system packages..."
