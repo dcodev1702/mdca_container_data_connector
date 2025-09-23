@@ -220,6 +220,22 @@ docker run -d \\
   mcr.microsoft.com/mcas/logcollector \\
   /bin/bash -c "echo \$MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 
+# Detect if running on RHEL/CentOS
+if [[ -f /etc/redhat-release ]]; then
+    echo "RHEL detected - applying lsof workaround for MDCA log collector container..."
+    
+    # Wait for container to be fully started
+    sleep 5
+    
+    # Replace broken lsof with dummy script
+    docker exec \$MDCA_COLLECTOR_NAME mv /usr/bin/lsof /usr/bin/lsof.broken 2>/dev/null || echo "lsof already moved or not found"
+    docker exec \$MDCA_COLLECTOR_NAME sh -c 'echo "#!/bin/bash" > /usr/bin/lsof'
+    docker exec \$MDCA_COLLECTOR_NAME sh -c 'echo "exit 0" >> /usr/bin/lsof'
+    docker exec \$MDCA_COLLECTOR_NAME chmod +x /usr/bin/lsof
+    
+    echo "RHEL lsof workaround applied successfully"
+fi
+
 echo "MDCA log collector deployed successfully!"
 echo "Check status with: docker logs \$MDCA_COLLECTOR_NAME"
 EOF
