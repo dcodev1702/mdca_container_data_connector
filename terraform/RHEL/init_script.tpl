@@ -207,7 +207,6 @@ echo "Collector IP: \$PUBLIC_IP"
 # Deploy MDCA container
 docker run -d \\
   --name \$MDCA_COLLECTOR_NAME \\
-  --privileged \\
   -p \$PUBLIC_IP:514:514/udp \\
   -e "PUBLICIP='\$PUBLIC_IP'" \\
   -e "PROXY=" \\
@@ -221,6 +220,9 @@ docker run -d \\
   /bin/bash -c "echo \$MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 
 # Detect if running on RHEL/CentOS
+# The 'lsof' utility is severely broken in the log collector container!
+# This prevents messages in /var/adallom/syslog/rotated/514 from successfully making its way OUTBOUND TCP:443/TLS 1.2 -> MDCA.
+# This is purely a hack to make this work with RHEL and the MDCA Container!
 if [[ -f /etc/redhat-release ]]; then
     echo "RHEL detected - applying lsof workaround for MDCA log collector container..."
     
