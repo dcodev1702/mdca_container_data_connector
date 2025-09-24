@@ -29,9 +29,6 @@ LOG_FILE="/var/log/init_script.log"
 OS=$(lsb_release -d | cut -f2)
 PUBLIC_IP=$(curl -s https://ipv4.icanhazip.com)
 
-mkdir -p /home/$USER/data
-chown -R $USER:$USER /home/$USER/data
-
 touch /home/$USER/.hushlogin
 chown $USER:$USER /home/$USER/.hushlogin
 
