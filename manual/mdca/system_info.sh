@@ -1,7 +1,11 @@
 #!/bin/bash
 
+source /etc/os-release
+
 echo "=== MDCA Demo VM System Information (RHEL 9.6) ==="
 echo "Date: $(date)"
+
+echo "Platform: $PRETTY_NAME"
 echo "Hostname: $(hostname)"
 echo "Public IP: $(curl -s https://ipv4.icanhazip.com)"
 echo "Private IP: $(hostname -I | awk '{print }')"
