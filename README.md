@@ -251,7 +251,7 @@ docker pull mcr.microsoft.com/mcas/logcollector
 
 ```
 repository/
-├── README.md                      # This guide
+├── README.md                     # This guide
 ├── mdca_send_msgs.sh             # Test script for sending sample logs
 ├── cisco_asa_fp_c_ai2k.log       # Sample Cisco ASA FirePOWER logs
 └── deployment/
