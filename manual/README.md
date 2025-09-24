@@ -14,14 +14,14 @@ This guide provides step-by-step instructions for manually deploying an MDCA log
 
 ### System Requirements
 - **Linux VM** running one of the following:
-  - Red Hat Enterprise Linux (RHEL) 9.x
-  - Ubuntu 24.04 LTS
-- **VM Specifications**: Minimum 2 vCPU, 4GB RAM, 20GB storage
+  - Red Hat Enterprise Linux (RHEL) 9.x - Gen2
+  - Ubuntu 24.04 LTS - Gen2
+- **VM Specifications**: Minimum 2 vCPU, 8GB RAM, 128GB storage
 - **Network Access**: Internet connectivity for downloading Docker and MDCA images
 
 ### Technical Knowledge
-- Linux system administration
-- Basic containerization concepts (Docker)
+- Linux System Administration
+- Basic Containerization concepts (Docker)
 - Bash scripting
 - Networking fundamentals (syslog, UDP/TCP)
 - SSH key management
@@ -36,9 +36,9 @@ This guide provides step-by-step instructions for manually deploying an MDCA log
 4. **Configure networking**:
    - Create or use existing Virtual Network
    - Configure Network Security Group to allow:
-     - SSH (port 22)
+     - SSH (port 22/TCP)
      - Syslog (port 514/UDP)
-     - HTTPS outbound (port 443)
+     - HTTPS outbound (port 443/TCP)
 5. **Note the public IP address** for SSH access
 
 ## Step 2: Connect to VM and Setup Repository
@@ -169,9 +169,39 @@ docker ps | grep logcollector
 
 # View container logs
 docker logs cisco_asa_fp_logcollector
+```
+
+### Verify MDCA Log Collector
+
+```bash
+# Check if MDCA container is running
+docker ps | grep logcollector
+
+# Check container logs
+docker logs CISCO_FP_TFAI
+
+# Verify collector is communicating with MDCA
+docker exec -it CISCO_FP_TFAI bash
+cd /var/adallom/syslog/514
+ls -lah messages
 
 # Get detailed container information
-docker inspect cisco_asa_fp_logcollector
+docker inspect CISCO_FP_TFAI
+```
+
+### Monitor Log Collection (INBOUND 514:UDP / OUTBOUND 443:TCP:TLS1.2)
+```
+# Validate inbound/outbound inside MDCA Log Collector Container
+docker exec -it CISCO_FP_TFAI bash
+
+# Watch message file growth (must be > 40KB)
+watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
+
+# View real-time logs (INBOUND [514:UDP] TO MDCA LOG COLLECTOR CONTAINER)
+tail -f /var/adallom/syslog/514/messages
+
+# View real-time logs (OUTBOUND [443:TCP/TLS1.2] TO DEFENDER XDR -> MDCA)
+tail -f /var/log/adallom/columbus/trace.log
 ```
 
 ### Network Connectivity
