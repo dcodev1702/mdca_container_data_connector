@@ -157,19 +157,8 @@ sudo reboot
 2. **Monitor the sending process**:
    ```bash
    # In another terminal session, watch container logs
-   docker logs -f cisco_asa_fp_logcollector
+   docker logs -f CISCO_FP_TFAI
    ```
-
-## Monitoring and Verification
-
-### Container Status
-```bash
-# Check if container is running
-docker ps | grep logcollector
-
-# View container logs
-docker logs cisco_asa_fp_logcollector
-```
 
 ### Verify MDCA Log Collector
 
