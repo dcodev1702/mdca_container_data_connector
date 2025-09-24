@@ -12,6 +12,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 OS=$(cat /etc/redhat-release)
+PUBLIC_IP=$(curl -s https://ipv4.icanhazip.com)
 
 # Variables
 LOG_FILE="/var/log/init_script.log"
@@ -137,7 +138,7 @@ log_message "✓ Helper scripts created in /home/$USER/mdca/"
 log_message "✓ System aliases configured"
 log_message ""
 log_message "Next steps:"
-log_message "1. SSH to the VM: ssh -i <SSH_KEY> $USER@<public_ip>"
+log_message "1. SSH to the VM: ssh -i <SSH_KEY> $USER@$PUBLIC_IP"
 log_message "3. Run system info: /home/$USER/mdca/deploy_mdca_log_collector.sh"
 log_message "4. Run system info: /home/$USER/mdca/system_info.sh"
 log_message "5. Run ./mdca_send_msgs.sh to send data to Defender XDR via the MDCA Log Collector"
