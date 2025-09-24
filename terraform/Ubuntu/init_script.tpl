@@ -248,8 +248,12 @@ log_message "Creating system info script..."
 cat > "/home/$ADMIN_USER/mdca/system_info.sh" << EOF
 #!/bin/bash
 
+source /etc/os-release
+
 echo "=== MDCA Demo VM System Information ==="
 echo "Date: \$(date)"
+
+echo "Platform: \$PRETTY_NAME"
 echo "Hostname: \$(hostname)"
 echo "Public IP: \$(curl -s https://ipv4.icanhazip.com)"
 echo "Private IP: \$(hostname -I | awk '{print $1}')"
