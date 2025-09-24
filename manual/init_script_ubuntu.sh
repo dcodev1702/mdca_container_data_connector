@@ -90,11 +90,6 @@ log_message "Verifying Docker installation..."
 docker --version
 docker images
 
-# Create directories for MDCA setup
-log_message "Creating MDCA directory..."
-mkdir -p "/home/$USER/mdca"
-chown -R $USER:$USER /home/$USER/mdca/
-
 # Set up firewall rules (if ufw is enabled)
 #if systemctl is-active --quiet ufw; then
 #    log_message "Configuring firewall rules..."
