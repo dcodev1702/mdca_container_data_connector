@@ -11,11 +11,24 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-OS=$(cat /etc/redhat-release)
-PUBLIC_IP=$(curl -s https://ipv4.icanhazip.com)
+# Check if system is RHEL
+if [ ! -f /etc/redhat-release ]; then
+    echo "Error: This script is designed for Red Hat Enterprise Linux (RHEL) systems only"
+    echo "Current system is not RHEL compatible"
+    exit 1
+fi
+
+# Verify RHEL version (should be 9.x)
+if ! grep -q "Red Hat Enterprise Linux" /etc/redhat-release; then
+    echo "Error: This script requires Red Hat Enterprise Linux"
+    echo "Detected system: $(cat /etc/redhat-release 2>/dev/null || echo 'Unknown')"
+    exit 1
+fi
 
 # Variables
 LOG_FILE="/var/log/init_script.log"
+OS=$(cat /etc/redhat-release)
+PUBLIC_IP=$(curl -s https://ipv4.icanhazip.com)
 
 touch /home/$USER/.hushlogin
 chown $USER:$USER /home/$USER/.hushlogin
