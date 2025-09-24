@@ -67,9 +67,9 @@ echo "Collector: $MDCA_COLLECTOR_NAME"
 echo "Collector IP: $PUBLIC_IP"
 
 # Deploy MDCA container
-#  --privileged \
 docker run -d \
   --name $MDCA_COLLECTOR_NAME \
+  --privileged \
   -p $PUBLIC_IP:514:514/udp \
   -e "PUBLICIP='$PUBLIC_IP'" \
   -e "PROXY=" \
