@@ -71,7 +71,8 @@ Both platforms create identical Azure infrastructure:
 - **Network Security Group** with SSH and Syslog rules
 - **Virtual Machine** (Standard_D2s_v3, 128GB Premium SSD)
 - **SSH Key Pair** (RSA 4096-bit, saved locally)
-- **Public IP** with static allocation
+- **Public IP** with dynamic allocation
+- **Private IP** with static allocation
 - **MDCA Log Collector** Docker container (auto-deployed)
 - **Test Data Files** (Cisco ASA FirePower logs)
 
