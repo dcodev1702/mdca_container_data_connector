@@ -57,6 +57,7 @@ vm_size        = "Standard_D2s_v3"
 ### 3. Deploy
 
 ```bash
+az login
 terraform init
 terraform plan
 terraform apply -auto-approve
