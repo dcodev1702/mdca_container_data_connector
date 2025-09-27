@@ -40,8 +40,6 @@ if [ -z "$PUBLIC_IP" ]; then
     exit 1
 fi
 
-# Mask token value
-MASKED_AUTH_TOKEN="${MDCA_AUTH_TOKEN:0:4}****${MDCA_AUTH_TOKEN: -4}"
 
 # Check 3: Validate AUTH_TOKEN format (should be 64 character hex string)
 if ! echo "$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
