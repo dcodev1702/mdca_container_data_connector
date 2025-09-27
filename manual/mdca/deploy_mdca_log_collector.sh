@@ -3,6 +3,14 @@
 # MDCA Log Collector Deployment Script
 # Usage: ./deploy_mdca_log_collector.sh
 
+# Load config values
+if [ -f ".mdca_log_collector_config" ]; then
+    source .mdca_log_collector_config
+else
+    echo "Error: .mdca_log_collector_config not found!"
+    exit 1
+fi
+
 # Check 1: Check the container status (state)
 CONTAINER_STATE=$(docker inspect -f '{{.State.Status}}' "$MDCA_COLLECTOR_NAME" 2>/dev/null)
 
