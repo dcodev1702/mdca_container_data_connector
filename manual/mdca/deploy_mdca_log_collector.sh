@@ -3,10 +3,6 @@
 # MDCA Log Collector Deployment Script
 # Usage: ./deploy_mdca_log_collector.sh
 
-MDCA_AUTH_TOKEN="YOUR_AUTH_TOKEN_GOES_HERE"
-MDCA_CONSOLE_URL="<TENANT_NAME>.<REGION>.portal.cloudappsecurity.com"
-MDCA_COLLECTOR_NAME="<LOG_COLLECTOR_NAME>"
-
 # Check 1: Check the container status (state)
 CONTAINER_STATE=$(docker inspect -f '{{.State.Status}}' "$MDCA_COLLECTOR_NAME" 2>/dev/null)
 
@@ -36,10 +32,13 @@ if [ -z "$PUBLIC_IP" ]; then
     exit 1
 fi
 
+# Mask token value
+MASKED_AUTH_TOKEN="${MDCA_AUTH_TOKEN:0:4}****${MDCA_AUTH_TOKEN: -4}"
+
 # Check 3: Validate AUTH_TOKEN format (should be 64 character hex string)
 if ! echo "$MDCA_AUTH_TOKEN" | grep -qE '^[a-fA-F0-9]{64}$'; then
     echo "Error: AUTH_TOKEN must be a 64-character hexadecimal string"
-    echo "Current token: $MDCA_AUTH_TOKEN"
+    echo "Current token (masked): $MASKED_TOKEN"
     echo "Token length: ${#MDCA_AUTH_TOKEN}"
     exit 1
 fi
@@ -61,7 +60,7 @@ if ! echo "$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
 fi
 
 echo "Deploying MDCA Log Collector..."
-echo "Auth Token: $MDCA_AUTH_TOKEN"
+echo "Auth Token: $MASKED_AUTH_TOKEN
 echo "Console Url: $MDCA_CONSOLE_URL"
 echo "Collector: $MDCA_COLLECTOR_NAME"
 echo "Collector IP: $PUBLIC_IP"
