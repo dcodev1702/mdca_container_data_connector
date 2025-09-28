@@ -8,9 +8,6 @@ set -x
 
 # Variables
 ADMIN_USER="${admin_username}"
-AUTH_TOKEN="${mdca_auth_token}"
-CONSOLE_URL="${mdca_console_url}"
-COLLECTOR_NAME="${mdca_collector_name}"
 LOG_FILE="/var/log/init_script.log"
 
 # Create and decode the script file
@@ -133,6 +130,7 @@ EOF
 # Set proper ownership
 chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/.bashrc"
 
+# MDCA Log Collector Settings from terraform.tfvars
 cat > "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf" << EOF
 MDCA_AUTH_TOKEN="${mdca_auth_token}"
 MASKED_TOKEN="\$${MDCA_AUTH_TOKEN:0:4}****\$${MDCA_AUTH_TOKEN: -4}"
