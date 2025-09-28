@@ -134,7 +134,8 @@ MDCA_CONSOLE_URL="${mdca_console_url}"
 MDCA_COLLECTOR_NAME="${mdca_collector_name}"
 EOF
 
-# Set proper ownership
+# Set proper ownership & permissions
+chmod 400 "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf"
 chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf"
 
 # Load config values
