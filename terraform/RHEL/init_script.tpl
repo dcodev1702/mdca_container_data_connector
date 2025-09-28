@@ -27,7 +27,7 @@ log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a $LOG_FILE
 }
 
-log_message "Starting MDCA Demo VM initialization on RHEL 9.6..."
+log_message "Starting MDCA Demo VM initialization..."
 
 # Update system packages
 log_message "Updating system packages..."
