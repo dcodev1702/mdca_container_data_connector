@@ -133,6 +133,17 @@ EOF
 # Set proper ownership
 chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/.bashrc"
 
+cat > "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf" << EOF
+MDCA_AUTH_TOKEN="${mdca_auth_token}"
+MASKED_TOKEN="\$${MDCA_AUTH_TOKEN:0:4}****\$${MDCA_AUTH_TOKEN: -4}"
+MDCA_CONSOLE_URL="${mdca_console_url}"
+MDCA_COLLECTOR_NAME="${mdca_collector_name}"
+EOF
+
+# Set proper ownership & permissions
+chmod 400 "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf"
+chown $ADMIN_USER:$ADMIN_USER "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf"
+
 # Create a sample MDCA Log Collector deployment script
 log_message "Creating MDCA deployment helper script..."
 cat > "/home/$ADMIN_USER/mdca/deploy_mdca_log_collector.sh" << EOF
@@ -141,9 +152,13 @@ cat > "/home/$ADMIN_USER/mdca/deploy_mdca_log_collector.sh" << EOF
 # MDCA Log Collector Deployment Script
 # Usage: ./deploy_mdca_log_collector.sh
 
-MDCA_AUTH_TOKEN="${mdca_auth_token}"
-MDCA_CONSOLE_URL="${mdca_console_url}"
-MDCA_COLLECTOR_NAME="${mdca_collector_name}"
+# Load config values
+if [ -f "/home/$ADMIN_USER/mdca/.mdca_log_collector_conf" ]; then
+    source /home/$ADMIN_USER/mdca/.mdca_log_collector_conf
+else
+    echo "Error: /home/$ADMIN_USER/mdca/.mdca_log_collector_conf not found!"
+    exit 1
+fi
 
 # Check 1: Check the container status (state)
 CONTAINER_STATE=\$(docker inspect -f '{{.State.Status}}' "\$MDCA_COLLECTOR_NAME" 2>/dev/null)
