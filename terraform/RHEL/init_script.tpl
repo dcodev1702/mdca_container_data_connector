@@ -10,6 +10,9 @@ set -x
 ADMIN_USER="${admin_username}"
 LOG_FILE="/var/log/init_script.log"
 
+source /etc/os-release
+VM_PUBLIC_IP=\$(curl -s https://ipv4.icanhazip.com)
+
 # Create and decode the script file
 echo "${mdca_script_content}" | base64 -d > /home/${admin_username}/mdca_send_msgs.sh
 
@@ -324,7 +327,7 @@ bash /home/${admin_username}/mdca/deploy_mdca_log_collector.sh
 
 # Display summary
 log_message "=== Initialization Summary ==="
-log_message "✓ System packages updated (RHEL 9.6)"
+log_message "✓ System packages updated ($NAME $VERSION)"
 log_message "✓ Docker installed and configured"
 log_message "✓ MDCA log collector image pulled"
 log_message "✓ User $ADMIN_USER added to docker group"
@@ -334,11 +337,11 @@ log_message "✓ System aliases configured"
 log_message "✓ MDCA Log Collector deployed"
 log_message ""
 log_message "Next steps:"
-log_message "1. SSH to the VM: ssh -i <key> $ADMIN_USER@<public_ip>"
+log_message "1. SSH to the VM: ssh -i <key> $ADMIN_USER@$VM_PUBLIC_IP"
 log_message "2. Run system info: /home/$ADMIN_USER/mdca/system_info.sh"
 log_message "3. Run ./mdca_send_msgs.sh to send data to Defender XDR via the MDCA Log Collector"
 log_message ""
-log_message "MDCA Demo VM (RHEL 9.6) is ready for use!"
+log_message "MDCA Demo VM ($NAME $VERSION) is ready for use!"
 
 # Reboot to ensure all services start properly
 log_message "Rebooting system to finalize configuration..."
