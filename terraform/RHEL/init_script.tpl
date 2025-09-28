@@ -252,7 +252,7 @@ cat > "/home/$ADMIN_USER/mdca/system_info.sh" << EOF
 
 source /etc/os-release
 
-echo "=== MDCA Demo VM System Information (RHEL 9.6) ==="
+echo "=== MDCA Demo VM System Information (\$NAME \$VERSION) ==="
 echo "Date: \$(date)"
 
 echo "Platform: \$PRETTY_NAME"
