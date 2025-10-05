@@ -5,11 +5,11 @@
 set -e
 
 # Check if running with sudo privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Error: This script must be run with sudo privileges"
-    echo "Usage: sudo $0"
-    exit 1
-fi
+#if [ "$EUID" -ne 0 ]; then
+#    echo "Error: This script must be run with sudo privileges"
+#    echo "Usage: sudo $0"
+#    exit 1
+#fi
 
 # Check if system is RHEL
 if [ ! -f /etc/redhat-release ]; then
@@ -31,7 +31,7 @@ OS=$(cat /etc/redhat-release)
 PUBLIC_IP=$(curl -s https://ipv4.icanhazip.com)
 
 touch /home/$USER/.hushlogin
-chown $USER:$USER /home/$USER/.hushlogin
+sudo chown $USER:$USER /home/$USER/.hushlogin
 
 # Function to log messages
 log_message() {
@@ -42,11 +42,11 @@ log_message "Starting MDCA Demo VM initialization: $OS"
 
 # Update system packages
 log_message "Updating system packages..."
-dnf update -y
+sudo dnf update -y
 
 # Install required packages
 log_message "Installing required packages..."
-dnf install -y \
+sudo dnf install -y \
     curl \
     wget \
     unzip \
@@ -71,16 +71,16 @@ sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.
 # Install Docker using official script
 log_message "Installing Docker..."
 curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+sudo sh get-docker.sh
 
 # Add admin user to docker group
 log_message "Adding $USER to docker group..."
-usermod -aG docker $USER
+sudo usermod -aG docker $USER
 
 # Start and enable Docker service
 log_message "Starting Docker service..."
-systemctl start docker
-systemctl enable docker
+sudo systemctl start docker
+sudo systemctl enable docker
 
 # Pull MDCA log collector image
 log_message "Pulling MDCA log collector image..."
@@ -88,17 +88,17 @@ docker pull mcr.microsoft.com/mcas/logcollector
 
 # Verify Docker installation
 log_message "Verifying Docker installation..."
-docker --version
-docker images
+sudo docker --version
+sudo docker images
 
 
 # Set up firewall rules (if firewalld is enabled)
-if systemctl is-active --quiet firewalld; then
+if sudo systemctl is-active --quiet firewalld; then
     log_message "Configuring firewall rules..."
-    firewall-cmd --permanent --add-port=22/tcp --zone=public
-    firewall-cmd --permanent --add-port=514/udp --zone=public
-    firewall-cmd --permanent --add-service=https --zone=public
-    firewall-cmd --reload
+    sudo firewall-cmd --permanent --add-port=22/tcp --zone=public
+    sudo firewall-cmd --permanent --add-port=514/udp --zone=public
+    sudo firewall-cmd --permanent --add-service=https --zone=public
+    sudo firewall-cmd --reload
 fi
 
 # Create useful aliases for the admin user
@@ -127,12 +127,12 @@ alias meminfo='free -m'
 EOF
 
 # Set proper ownership
-chown $USER:$USER "/home/$USER/.bashrc"
+sudo chown $USER:$USER "/home/$USER/.bashrc"
 
 # Final system update
 log_message "Final system cleanup..."
-dnf autoremove -y
-dnf clean all
+sudo dnf autoremove -y
+sudo dnf clean all
 
 # Create completion marker
 log_message "MDCA Demo VM initialization completed successfully!"
