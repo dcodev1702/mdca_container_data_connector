@@ -204,8 +204,8 @@ terraform destroy -auto-approve
 
 ```
 terraform/
-├── README.md                    # This overview (platform selection)
-├── Ubuntu/                      # Ubuntu 24.04 LTS deployment
+├── README.md                   # This overview (platform selection)
+├── Ubuntu/                     # Ubuntu 24.04 LTS deployment
 │   ├── README.md               # Ubuntu-specific documentation
 │   ├── main.tf                 # Ubuntu Terraform configuration
 │   ├── variables.tf            # Variable definitions
