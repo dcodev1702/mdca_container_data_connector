@@ -75,6 +75,8 @@ echo "Collector IP: $PUBLIC_IP"
 docker run -d \
   --name $MDCA_COLLECTOR_NAME \
   --privileged \
+  --dns 8.8.8.8 \
+  --dns 1.1.1.1 \
   -p $PUBLIC_IP:514:514/udp \
   -e "PUBLICIP='$PUBLIC_IP'" \
   -e "PROXY=" \
