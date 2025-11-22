@@ -134,7 +134,7 @@ sudo reboot
    ```bash
    MDCA_AUTH_TOKEN="1a2b3c4d5e6f7890abcdef1234567890abcdef1234567890abcdef1234567890"
    MDCA_CONSOLE_URL="contoso.us3.portal.cloudappsecurity.com"
-   MDCA_COLLECTOR_NAME="cisco_asa_fp_logcollector"
+   MDCA_COLLECTOR_NAME="CISCO-ASA-FP"
    ```
 
 ## Step 5: Deploy MDCA Log Collector
@@ -152,7 +152,7 @@ sudo reboot
 
 3. **Check container logs**:
    ```bash
-   docker logs cisco_asa_fp_logcollector
+   docker logs -f CISCO-ASA-FP
    ```
 
    **Expected output should include**:
@@ -185,21 +185,21 @@ sudo reboot
 docker ps | grep logcollector
 
 # Check container logs
-docker logs CISCO_FP_TFAI
+docker logs -f CISCO-ASA-FP
 
 # Verify collector is communicating with MDCA
-docker exec -it CISCO_FP_TFAI bash
+docker exec -it CISCO-ASA-FP bash
 cd /var/adallom/syslog/514
 ls -lah messages
 
 # Get detailed container information
-docker inspect CISCO_FP_TFAI
+docker inspect CISCO-ASA-FP
 ```
 
 ### Monitor Log Collection (INBOUND 514:UDP / OUTBOUND 443:TCP:TLS1.2)
 ```
 # Validate inbound/outbound inside MDCA Log Collector Container
-docker exec -it CISCO_FP_TFAI bash
+docker exec -it CISCO-ASA-FP bash
 
 # Watch message file growth (must be > 40KB)
 watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
@@ -242,7 +242,7 @@ echo "test message" | nc -u localhost 514
 ./mdca/system_info.sh
 
 # Monitor Docker container resources
-docker stats cisco_asa_fp_logcollector
+docker stats CISCO-ASA-FP
 ```
 
 ### Log Verification in MDCA Portal
@@ -257,7 +257,7 @@ docker stats cisco_asa_fp_logcollector
 ### Container Won't Start
 ```bash
 # Remove existing container and redeploy
-docker rm -f cisco_asa_fp_logcollector
+docker rm -f CISCO-ASA-FP
 ./mdca/deploy_mdca_log_collector.sh
 
 # Check Docker daemon status
@@ -267,7 +267,7 @@ sudo systemctl status docker
 ### No Data in MDCA Portal
 ```bash
 # Verify container logs for authentication errors
-docker logs cisco_asa_fp_logcollector | grep -i error
+docker logs CISCO-ASA-FP | grep -i error
 
 # Test local syslog reception
 tcpdump -i any port 514 -v
