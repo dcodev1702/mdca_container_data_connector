@@ -98,6 +98,16 @@ docker images
 #    ufw allow out 443/tcp comment 'HTTPS outbound'
 #fi
 
+# APPARMOR PROFILE WILL PREVENT MESSAGES ON SYSLOG 514/UDP FROM GETTING PROCESSED
+# DO THE FOLLOWING SO MESSAGES ARE PROPERLY PROCESSED BY THE MDCA LOG COLLECTOR
+
+# Disable the profile again
+sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.rsyslogd
+
+# Make it permanent - prevent apparmor applying it's policy to rsyslogd on boot
+sudo ln -s /etc/apparmor.d/usr.sbin.rsyslogd /etc/apparmor.d/disable/usr.sbin.rsyslogd
+
+
 # Create useful aliases for the admin user
 log_message "Setting up user aliases..."
 cat >> "/home/$USER/.bashrc" << EOF
