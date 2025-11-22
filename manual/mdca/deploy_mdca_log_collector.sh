@@ -81,8 +81,10 @@ docker run -d \
   -e "SYSLOG=true" \
   -e "CONSOLE=$MDCA_CONSOLE_URL" \
   -e "COLLECTOR=$MDCA_COLLECTOR_NAME" \
+  --security-opt apparmor=unconfined \
   --cap-add=SYS_ADMIN \
   --cap-add=SYSLOG \
+  --cap-add=CHOWN \
   --restart unless-stopped \
   mcr.microsoft.com/mcas/logcollector \
   /bin/bash -c "echo $MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
