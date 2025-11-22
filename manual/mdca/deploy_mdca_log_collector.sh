@@ -65,11 +65,27 @@ if ! echo "$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
     exit 1
 fi
 
+# Check if port is in use and find next available port
+ORIGINAL_HOST_PORT=$HOST_PORT
+while docker ps --format '{{.Ports}}' | grep -q "$PUBLIC_IP:$HOST_PORT->"; do
+    echo "Port $HOST_PORT is already in use on $PUBLIC_IP"
+    HOST_PORT=$((HOST_PORT + 1000))
+    if [ $HOST_PORT -gt 60000 ]; then
+        echo "Error: No available ports found (searched up to 60000)"
+        exit 1
+    fi
+done
+
+if [ $HOST_PORT -ne $ORIGINAL_HOST_PORT ]; then
+    echo "Port $ORIGINAL_HOST_PORT was in use. Using port $HOST_PORT instead."
+fi
+
 echo "Deploying MDCA Log Collector..."
 echo "Auth Token: $MASKED_AUTH_TOKEN"
 echo "Console Url: $MDCA_CONSOLE_URL"
 echo "Collector: $MDCA_COLLECTOR_NAME"
 echo "Collector IP: $PUBLIC_IP"
+echo "Host Port: $HOST_PORT -> Container Port: $CNTR_PORT/udp"
 
 # Deploy MDCA container
 docker run -d \
@@ -109,5 +125,12 @@ if [[ -f /etc/redhat-release ]]; then
     echo "RHEL lsof workaround applied successfully"
 fi
 
+echo ""
+echo "======================================"
 echo "MDCA log collector deployed successfully!"
+echo "Container: $MDCA_COLLECTOR_NAME"
+echo "Listening on: $PUBLIC_IP:$HOST_PORT/udp"
+echo "======================================"
+echo ""
+echo "Configure your device to send syslog to: $PUBLIC_IP:$HOST_PORT"
 echo "Check status with: docker logs $MDCA_COLLECTOR_NAME"
