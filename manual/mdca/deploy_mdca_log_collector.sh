@@ -66,7 +66,7 @@ if ! echo "$MDCA_COLLECTOR_NAME" | grep -qE '^[a-zA-Z0-9_-]{3,50}$'; then
 fi
 
 echo "Deploying MDCA Log Collector..."
-echo "Auth Token: $MASKED_AUTH_TOKEN
+echo "Auth Token: $MASKED_AUTH_TOKEN"
 echo "Console Url: $MDCA_CONSOLE_URL"
 echo "Collector: $MDCA_COLLECTOR_NAME"
 echo "Collector IP: $PUBLIC_IP"
