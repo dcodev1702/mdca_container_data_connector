@@ -75,6 +75,8 @@ echo "Collector IP: $PUBLIC_IP"
 docker run -d \
   --name $MDCA_COLLECTOR_NAME \
   --privileged \
+  --memory 512m \
+  --cpus 0.5 \
   --dns 8.8.8.8 \
   --dns 1.1.1.1 \
   -p $PUBLIC_IP:$HOST_PORT:$CNTR_PORT/udp \
