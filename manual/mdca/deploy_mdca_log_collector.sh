@@ -4,10 +4,10 @@
 # Usage: ./deploy_mdca_log_collector.sh
 
 # Load config values
-if [ -f "/home/$USER/mdca/.mdca_log_collector_conf" ]; then
-    source "/home/$USER/mdca/.mdca_log_collector_conf"
+if [ -f "./.mdca_log_collector_conf" ]; then
+    source "./.mdca_log_collector_conf"
 else
-    echo "Error: /home/$USER/mdca/.mdca_log_collector_conf not found!"
+    echo "Error: ./.mdca_log_collector_conf not found!"
     exit 1
 fi
 
