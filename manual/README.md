@@ -212,6 +212,9 @@ tail -f /var/log/adallom/columbus/trace.log
 ```
 
 ### Messages Successfully Uploaded to MDCA via the MDCA Log Collector
+```bash
+docker exec -it CISCO-ASA-FP tail -f /var/log/adallom/columbus/trace.log
+```
 <img width="2063" height="621" alt="image" src="https://github.com/user-attachments/assets/a8e6fe2f-ada8-4939-8ab8-d27efb965cde" />
 
 
