@@ -230,7 +230,7 @@ docker exec -it CISCO-ASA-FP tail -f /var/log/adallom/columbus/trace.log
 netstat -tuln | grep 514
 
 # Check outbound HTTPS connections to Microsoft
-netstat -peauln | grep 443
+netstat -peaultn | grep 443
 
 # Test local syslog connectivity
 echo "test message" | nc -u localhost 514
