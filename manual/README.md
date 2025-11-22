@@ -211,6 +211,10 @@ tail -f /var/adallom/syslog/514/messages
 tail -f /var/log/adallom/columbus/trace.log
 ```
 
+### Messages Successfully Uploaded to MDCA via the MDCA Log Collector
+<img width="2063" height="621" alt="image" src="https://github.com/user-attachments/assets/a8e6fe2f-ada8-4939-8ab8-d27efb965cde" />
+
+
 ### Network Connectivity
 ```bash
 # Verify syslog port is listening
