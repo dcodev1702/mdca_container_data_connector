@@ -217,6 +217,12 @@ docker exec -it CISCO-ASA-FP tail -f /var/log/adallom/columbus/trace.log
 ```
 <img width="2063" height="621" alt="image" src="https://github.com/user-attachments/assets/a8e6fe2f-ada8-4939-8ab8-d27efb965cde" />
 
+### DATA SOURCE
+<img width="1806" height="878" alt="image" src="https://github.com/user-attachments/assets/fdddf93f-c00a-4a78-9eb9-2d13abbcf2bd" />
+
+### LOG COLLECTOR (SYSLOG 10.0.0.9:514/UDP)
+<img width="1477" height="467" alt="image" src="https://github.com/user-attachments/assets/0fe9785a-afa2-4faa-b92f-dda05bde3535" />
+
 
 ### Network Connectivity
 ```bash
