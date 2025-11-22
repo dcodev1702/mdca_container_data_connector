@@ -97,8 +97,6 @@ sudo systemctl reload apparmor
 docker restart CISCO-ASA-FP
 ```
 
-```
-
 ### For RHEL 9.x:
 ```bash
 sudo ./manual/init_script_rhel.sh
