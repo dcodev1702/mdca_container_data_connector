@@ -76,7 +76,27 @@ Choose the appropriate initialization script for your Linux distribution:
 
 ### For Ubuntu 24.04 LTS:
 ```bash
-sudo ./manual/init_script_ubuntu.sh
+# APPARMOR PROFILE WILL PREVENT MESSAGES ON SYSLOG 514/UDP FROM GETTING PROCESSED
+# DO THE FOLLOWING SO MESSAGES ARE PROPERLY PROCESSED BY THE MDCA LOG COLLECTOR
+
+# Disable the profile again
+sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.rsyslogd
+
+# Make it permanent - prevent it from loading on boot
+sudo ln -s /etc/apparmor.d/usr.sbin.rsyslogd /etc/apparmor.d/disable/usr.sbin.rsyslogd
+```
+
+```bash
+# OR completely remove the profile
+sudo rm /etc/apparmor.d/usr.sbin.rsyslogd
+sudo systemctl reload apparmor
+```
+
+```bash
+# Restart the docker container
+docker restart CISCO-ASA-FP
+```
+
 ```
 
 ### For RHEL 9.x:
