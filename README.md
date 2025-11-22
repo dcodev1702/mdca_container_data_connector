@@ -71,19 +71,25 @@ PUBLIC_IP: This is the VM's Private IP that you used when setting up the MDCA Lo
 
 ```bash
 docker run -d \
-  --name cisco_asa_fp_logcollector \
+  --name $MDCA_COLLECTOR_NAME \
   --privileged \
-  -p 514:514/udp \
-  -e "PUBLIC_IP='10.0.0.4'" \
+  --memory 512m \
+  --cpus 0.5 \
+  --dns 8.8.8.8 \
+  --dns 1.1.1.1 \
+  -p $PUBLIC_IP:$HOST_PORT:$CNTR_PORT/udp \
+  -e "PUBLICIP='$PUBLIC_IP'" \
   -e "PROXY=" \
   -e "SYSLOG=true" \
-  -e "CONSOLE=<YOUR_MDCA_TENANT>.portal.cloudappsecurity.com" \
-  -e "COLLECTOR=cisco_asa_fp_logcollector" \
+  -e "CONSOLE=$MDCA_CONSOLE_URL" \
+  -e "COLLECTOR=$MDCA_COLLECTOR_NAME" \
+  --security-opt apparmor=unconfined \
   --cap-add=SYS_ADMIN \
   --cap-add=SYSLOG \
+  --cap-add=CHOWN \
   --restart unless-stopped \
   mcr.microsoft.com/mcas/logcollector \
-  /bin/bash -c 'echo "<AUTH_TOKEN>" | /etc/adallom/scripts/starter'
+  /bin/bash -c "echo $MDCA_AUTH_TOKEN | /etc/adallom/scripts/starter"
 ```
 
 **Required Parameters:**
@@ -173,13 +179,13 @@ The script sends sample Cisco ASA FirePOWER logs to the collector for testing.
 Monitor the log collection process:
 ```bash
 # Watch message file growth
-watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
+docker exec -it CISCO-ASA-FP watch -n 5 'ls -lah /var/adallom/syslog/514/messages'
 
 # View real-time logs (INBOUND [514:UDP] TO MDCA LOG COLLECTOR CONTAINER)
-tail -f /var/adallom/syslog/514/messages
+docker exec -it CISCO-ASA-FP ls -lah /var/adallom/syslog/514/messages
 
 # View real-time logs (OUTBOUND [443:TCP/TLS1.2] TO DEFENDER XDR -> MDCA)
-tail -f /var/log/adallom/columbus/trace.log
+docker exec -it CISCO-ASA-FP tail -f /var/log/adallom/columbus/trace.log
 ```
 **Note**: Files rotate and upload to MDCA when they exceed 40KB.
 
@@ -207,10 +213,10 @@ tail -f /var/log/adallom/columbus/trace.log
 docker ps -a
 
 # View detailed logs
-docker logs cisco_asa_fp_logcollector
+docker logs -f CISCO-ASA-FP
 
 # Remove and recreate
-docker rm -f cisco_asa_fp_logcollector
+docker rm -f CISCO-ASA-FP
 ```
 
 **No syslog data received:**
@@ -233,13 +239,13 @@ sudo iptables -L
 
 **Stop and remove container:**
 ```bash
-docker rm -f cisco_asa_fp_logcollector
+docker rm -f CISCO-ASA-FP
 ```
 
 **Update collector:**
 ```bash
 # Remove old container
-docker rm -f cisco_asa_fp_logcollector
+docker rm -f CISCO-ASA-FP
 
 # Pull latest image
 docker pull mcr.microsoft.com/mcas/logcollector
