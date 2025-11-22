@@ -77,7 +77,7 @@ docker run -d \
   --privileged \
   --dns 8.8.8.8 \
   --dns 1.1.1.1 \
-  -p $PUBLIC_IP:514:514/udp \
+  -p $PUBLIC_IP:$HOST_PORT:$CNTR_PORT/udp \
   -e "PUBLICIP='$PUBLIC_IP'" \
   -e "PROXY=" \
   -e "SYSLOG=true" \
