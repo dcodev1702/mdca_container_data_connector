@@ -41,12 +41,12 @@ log_message "Starting MDCA Demo VM initialization..."
 
 # Update system packages
 log_message "Updating system packages..."
-apt-get update -y
-apt-get upgrade -y
+sudo apt-get update -y
+sudo apt-get upgrade -y
 
 # Install required packages
 log_message "Installing required packages..."
-apt-get install -y \
+sudo apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -70,25 +70,25 @@ apt-get install -y \
 # Install Docker using official script
 log_message "Installing Docker..."
 curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+sudo sh get-docker.sh
 
 # Add admin user to docker group
 log_message "Adding $USER to docker group..."
-usermod -aG docker $USER
+sudo usermod -aG docker $USER
 
 # Start and enable Docker service
 log_message "Starting Docker service..."
-systemctl start docker
-systemctl enable docker
+sudo systemctl start docker
+sudo systemctl enable docker
 
 # Pull MDCA log collector image
 log_message "Pulling MDCA log collector image..."
-docker pull mcr.microsoft.com/mcas/logcollector
+sudo docker pull mcr.microsoft.com/mcas/logcollector
 
 # Verify Docker installation
 log_message "Verifying Docker installation..."
-docker --version
-docker images
+sudo docker --version
+sudo docker images ls
 
 # Set up firewall rules (if ufw is enabled)
 #if systemctl is-active --quiet ufw; then
@@ -145,10 +145,10 @@ log_message "Final system cleanup..."
 
 # Remove App Armor or else the RSYSLOG in the MDCA Container will NOT WORK PROPERLY!
 # TODO: Still troubleshooting the issue. 
-apt-get remove --purge apparmor apparmor-utils -y
+sudo apt-get remove --purge apparmor apparmor-utils -y
 
-apt-get autoremove -y
-apt-get autoclean
+sudo apt-get autoremove -y
+sudo apt-get autoclean
 
 # Display summary
 log_message "=== Initialization Summary ==="
